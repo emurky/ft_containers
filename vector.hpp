@@ -5,6 +5,8 @@
 
 # include <vector> // delete
 
+# include "iterator.hpp"
+
 namespace	ft
 
 {
@@ -12,6 +14,7 @@ namespace	ft
 template < class T, class Allocator = std::allocator<T> >
 class vector
 {
+	// Type definitions
 	public:
 		typedef T											value_type;
 		typedef Allocator									allocator_type;
@@ -24,44 +27,86 @@ class vector
 		// typedef std::reverse_iterator<iterator>				reverse_iterator;
 		// typedef std::reverse_iterator<const_iterator>		const_reverse_iterator;
 
+	// Private members
 	private:
 		pointer			_start;
-		size_type		_size;
-		size_type		_capacity;
-		allocator_type	_allocator;
+		pointer			_end;
+		pointer			_end_cap;
+		// size_type		_size;
+		// size_type		_capacity;
+		allocator_type	_alloc;
 
+	// Member functions
 	public:
-		explicit vector (const allocator_type & alloc = allocator_type()) :
-			_array(NULL), _size(0), _capacity(0), _allocator(alloc)
+		size_type	size() { return _end - _start; }
+		size_type	capacity() { return _end_cap - _start; }
+
+//Capacity
+	// size
+	// max_size
+	// resize
+	// capacity
+	// empty
+	// reserve
+//Modifiers
+	// assign
+	// push_back
+	// pop_back
+	// insert
+	// erase
+	// swap
+	// clear
+//Element access
+	// operator[]
+	// at
+	// front
+	// back
+	// data
+
+// allocator_type get_allocator() const;
+
+	// Constructors
+	public:
+		explicit vector	(const allocator_type & alloc = allocator_type()) :
+			_start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
 		{
 		}
 
-		explicit vector (size_type count, const value_type & value = value_type(),
+		explicit vector	(size_type count, const value_type & value = value_type(),
 						const allocator_type & alloc = allocator_type()) :
-			_size(count), _capacity(count), _allocator(alloc)
+			_alloc(alloc)
 		{
-			_array = _allocator.allocate(_capacity);
-			for (size_type i = 0; i < _size; i++)
+			_start = _alloc.allocate(count);
+			_end = _start + count;
+			_end_cap = _end;
+			for (pointer it = _start; it < _end; it++) //iterator???????????????????????
 			{
-				_allocator.construct(_array + i, value);
+				_alloc.construct(it, value);
 			}
 		}
 
-		template <class InputIterator>
-		vector (InputIterator first, InputIterator last,
+		template < class InputIterator >
+		vector	(InputIterator first, InputIterator last,
 				const allocator_type & alloc = allocator_type())
 		{
-			_size = last - first;
-			_capacity = _size;
-			_allocator = alloc;
-			_array = _allocator.allocate(_capacity);
-			for (size_type i = 0; first != last; i++, first++)
+			_start = first;
+			_end = last;
+			_end_cap = _end;
+			_alloc = alloc;
+			_start = _alloc.allocate(capacity());
+			for (pointer it = _start; it != _end; it++) //iterator????????????????????
 			{
-				_allocator.construct(_array + i, *first);
+				_alloc.construct(it, *it);
 			}
 		}
 
-		vector (const vector & other);
+		vector (vector const & other);
+
+		// vector &	operator = (vector const & other)
+		// {
+
+		// }
+
 };
 
 }

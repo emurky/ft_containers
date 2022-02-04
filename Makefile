@@ -7,7 +7,7 @@ DEPS				= $(SRCS:.cpp=.d)
 
 CXX					= clang++
 RM 					= rm -f
-CXXFLAGS			= -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
+CXXFLAGS			= -Wall -Wextra -Werror -std=c++98 #-g -fsanitize=address
 CPPFLAGS			= -MMD -I.
 
 all:				$(NAME)
