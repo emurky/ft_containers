@@ -3,3 +3,5 @@
 *.d
 test
 mein.cpp
+*.txt
+*test*

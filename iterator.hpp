@@ -84,7 +84,7 @@ class iterator
 		iterator		operator - (diff_type n) const		{ iterator tmp(*this); tmp -= n; return tmp; }
 		iterator &		operator -= (diff_type n)			{ _it -= n; return *this; }
 
-		friend iterator		operator + (diff_type n, iterator const & iter)				{ iterator ret(iter); ret += n; return ret;}
+		friend iterator		operator + (diff_type n, iterator const & iter)				{ iterator ret(iter); ret += n; return ret; }
 		friend diff_type	operator - (iterator const & it1, iterator const & it2)		{ return it1.base() - it2.base(); }
 		friend bool			operator == (iterator const & lhs, iterator const & rhs)	{ return lhs._it == rhs._it; }
 		friend bool			operator != (iterator const & lhs, iterator const & rhs)	{ return !(lhs == rhs); }
