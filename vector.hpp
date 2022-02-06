@@ -3,9 +3,10 @@
 
 # include <memory>
 
-# include <vector> // delete
+// # include <vector> // delete
 
 # include "iterator.hpp"
+# include "utils.hpp"
 
 namespace	ft
 
@@ -26,8 +27,8 @@ class vector
 		typedef typename allocator_type::const_pointer		const_pointer;
 		typedef ft::iterator<pointer>						iterator;
 		typedef ft::iterator<const_pointer>					const_iterator;
-		// typedef std::reverse_iterator<iterator>				reverse_iterator;
-		// typedef std::reverse_iterator<const_iterator>		const_reverse_iterator;
+		typedef ft::reverse_iterator<iterator>				reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
 
 	// Private members
 	private:
@@ -54,12 +55,14 @@ class vector
 	public:
 
 	//Iterators
-		iterator		begin()				{ return iterator(_start); }
-		const_iterator	begin() const		{ return iterator(_start); }
-		iterator		end()				{ return iterator(_end); }
-		const_iterator	end() const			{ return iterator(_end); }
-		// rbegin()
-		// rend()
+		iterator				begin()				{ return iterator(_start); }
+		const_iterator			begin() const		{ return iterator(_start); }
+		iterator				end()				{ return iterator(_end); }
+		const_iterator			end() const			{ return iterator(_end); }
+		reverse_iterator		rbegin()			{ return reverse_iterator(_end); }
+		const_reverse_iterator	rbegin() const		{ return reverse_iterator(_end); }
+		reverse_iterator		rend()				{ return reverse_iterator(_start); }
+		const_reverse_iterator	rend() const		{ return reverse_iterator(_start); }
 
 	//Capacity
 		size_type		size() const		{ return static_cast<size_type>(_end - _start); }
@@ -162,13 +165,13 @@ class vector
 		}
 
 		explicit vector	(size_type count, const value_type & value = value_type(),
-						const allocator_type & alloc = allocator_type()) :
-			_alloc(alloc)
+						const allocator_type & alloc = allocator_type())
 		{
+			_alloc = alloc;
 			_start = _alloc.allocate(count);
 			_end = _start + count;
 			_end_cap = _end;
-			for (pointer it = _start; it < _end; it++) //iterator???????????????????????
+			for (pointer it = _start; it < _end; it++)
 			{
 				_alloc.construct(it, value);
 			}
@@ -177,16 +180,24 @@ class vector
 		template < class InputIterator >
 		vector	(InputIterator first, InputIterator last,
 				const allocator_type & alloc = allocator_type())
+				// typename ft::enable_if<ft::is_integral<InputIterator>::value>::type * = 0)
 		{
-			_start = first;
-			_end = last;
-			_end_cap = _end;
-			_alloc = alloc;
-			_start = _alloc.allocate(capacity());
-			for (iterator it = _start; it != _end; it++, first++) //iterator????????????????????
-			{
-				_alloc.construct(it, *first);
+			size_type		cap = 0;
+			InputIterator	iter = first;
+
+			while (iter != last) {
+				cap++;
+				iter++;
 			}
+			_alloc = alloc;
+			_start = _alloc.allocate(cap);
+			_end = _start;
+			while (first != last) {
+				_alloc.construct(_end, *first);
+				first++;
+				_end++;
+			}
+			_end_cap = _end;
 		}
 
 		vector	(vector const & other);
