@@ -45,6 +45,18 @@ class vector
 				_alloc.destroy(--_end);
 		}
 
+		template < class Iterator >
+		size_type		_get_size(Iterator first, Iterator last)
+		{
+			size_type	size = 0;
+
+			while (first != last) {
+				first++;
+				size++;
+			}
+			return size;
+		}
+
 	// Member functions
 	public:
 
@@ -64,7 +76,7 @@ class vector
 		size_type		max_size() const	{ return _alloc.max_size(); }
 		bool			empty() const		{ return _start == _end; }
 
-		void			resize (size_type n, value_type val = value_type())
+		void			resize (size_type n, value_type value = value_type())
 		{
 			size_type	size = size();
 			if (n < size) {
@@ -74,7 +86,7 @@ class vector
 				reserve(n);
 			}
 			while (size < n) {
-				_alloc.construct(_start + size, val);
+				_alloc.construct(_start + size, value);
 				size++;
 			}
 			_end = _start + size;
@@ -101,10 +113,37 @@ class vector
 		}
 
 	//Modifiers
-		// assign
+		template <class InputIterator>
+		void			assign(InputIterator first, InputIterator last,
+								typename ft::enable_if <!ft::is_integral<InputIterator>::value>::type * = 0)
+		{
+			size_type	new_size = _get_size(first, last);
+
+			clear();
+			if (new_size > capacity()) {
+				reserve(new_size);
+			}
+			while (first != last) {
+				_alloc.construct(_end++, *first++);
+			}
+		}
+
+		void			assign(size_type n, value_type const & value)
+		{
+			clear();
+			if (n > capacity()) {
+				reserve(n);
+			}
+			while (n) {
+				_alloc.construct(_end++, value);
+				n--;
+			}
+		}
+
 		void			push_back(value_type const & value)
 		{
 			size_type	cap = capacity();
+
 			if (cap == 0) {
 				reserve(1);
 			}
@@ -121,35 +160,43 @@ class vector
 			_alloc.destroy(_end);
 		}
 
-		// insert
+		iterator	insert(iterator position, value_type const & value);
+
+		void		insert(iterator position, size_type n, value_type const & value);
+
+		template <class InputIterator>
+		void		insert(iterator position, InputIterator first, InputIterator last);
+
+
 		// erase
 		// swap
 		void			clear()							{ _destroy_after_pos(_start); }
+		allocator_type	get_allocator() const			{ return _alloc; }
 
 	//Element access
 		reference		front()							{ return *_start; }
 		const_reference	front() const					{ return *_start; }
-		reference		operator [] (size_type n)		{ return _start[n]; }
-		const_reference	operator [] (size_type n) const	{ return _start[n]; }
 		reference		back()							{ return *(_end - 1); }
 		const_reference	back() const					{ return *(_end - 1); }
+		reference		operator [] (size_type n)		{ return _start[n]; }
+		const_reference	operator [] (size_type n) const	{ return _start[n]; }
 
-		reference		at (size_type n) {
+		reference		at (size_type n)
+		{
 			if (n >= size())
 				throw std::out_of_range("vector");
 			return	_start;
 		}
 
-		const_reference	at (size_type n) const {
+		const_reference	at (size_type n) const
+		{
 			if (n >= size())
 				throw std::out_of_range("vector");
 			return	_start;
 		}
 
-		// value_type *		data()							{ return _start; }
-		// value_type const *	data() const					{ return _start; }
-
-		allocator_type	get_allocator() const			{ return _alloc; }
+		// pointer			data()							{ return _start; }
+		// pointer const	data() const					{ return _start; }
 
 	// Constructors
 	public:
@@ -173,18 +220,11 @@ class vector
 
 		template < class InputIterator >
 		vector	(InputIterator first, InputIterator last,
-				const allocator_type & alloc = allocator_type())
-				// typename ft::enable_if<ft::is_integral<InputIterator>::value>::type * = 0)
+				const allocator_type & alloc = allocator_type(),
+				typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
 		{
-			size_type		cap = 0;
-			InputIterator	iter = first;
-
-			while (iter != last) {
-				cap++;
-				iter++;
-			}
 			_alloc = alloc;
-			_start = _alloc.allocate(cap);
+			_start = _alloc.allocate(_get_size(first, last));
 			_end = _start;
 			while (first != last) {
 				_alloc.construct(_end, *first);
@@ -194,20 +234,18 @@ class vector
 			_end_cap = _end;
 		}
 
-		vector	(vector const & other);
+		vector	(vector const & other)
+		{
+			*this = other;
+		}
 
 		vector &	operator = (vector const & other)
 		{
-			if (this != &other)
-			{
-				clear();
-				_alloc.deallocate(_start, capacity());
-				_start = NULL;
-				_end = NULL;
-				_end_cap = NULL;
+			if (this != &other) {
+				assign(other.begin(), other.end());
 			}
 			return *this;
-		}//????????????????????????
+		}
 
 		~vector() { }
 };
