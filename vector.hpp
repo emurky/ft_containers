@@ -2,6 +2,7 @@
 # define FT_VECTOR_HPP
 
 # include <memory>
+# include <iostream> ///////////
 
 // # include <vector> // delete
 
@@ -160,12 +161,120 @@ class vector
 			_alloc.destroy(_end);
 		}
 
-		iterator	insert(iterator position, value_type const & value);
+		// iterator	insert(iterator pos, value_type const & value);
 
-		void		insert(iterator position, size_type n, value_type const & value);
+		// void			_move_elements(pointer first, pointer last, difference_type offset)
+		// {
+		// 	if (offset > 0) {
+		// 		while (first != last) {
+		// 			_alloc.construct(last + offset, *last);
+		// 			_alloc.destroy(last);
+		// 			last--;
+		// 		}
+		// 	}
+		// 	else if (offset < 0) {
+		// 		while (first != last) {
+		// 			_alloc.construct(first + offset, *first);
+		// 			_alloc.destroy(first);
+		// 			first++;
+		// 		}
+		// 	}
+		// }
 
-		template <class InputIterator>
-		void		insert(iterator position, InputIterator first, InputIterator last);
+		void			_move_forward(iterator first, size_type count)
+		{
+			while (--count) {
+				_alloc.construct(first + count + count, *first);
+				_alloc.destroy(first++);
+			}
+
+			// while (&(*first) <= &(*last)) {
+			// 	// std::cout << *(last + offset) << std::endl;
+			// 	_alloc.construct(last + offset, *last);
+			// 	_alloc.destroy(last);
+			// 	last--;
+			// }
+		}
+
+		void			_move_backward(pointer first, pointer last, difference_type offset)
+		{
+			while (first != last) {
+				_alloc.construct(first - offset, *first);
+				_alloc.destroy(first);
+				first++;
+			}
+		}
+
+		void			insert(iterator pos, size_type n, value_type const & value)
+		{
+			size_type	new_size = n + size();
+// (void)value;
+			difference_type index = pos - begin();
+			if (new_size > capacity()) {
+				// std::cout <<  size() << " size " << capacity() << " capacity " << n << " reserve\n";
+				reserve(new_size);
+				// std::cout <<  size() << " size " << capacity() << " capacity " << n << " reserve\n";
+			}
+			pointer		_pos_ptr = _start + index;
+			pointer		last = _end - 1;
+// std::cout << _start << " start " << _pos_ptr << " " << &(*pos) << " " << &(*pos) - last << " " << (&(*pos) - _start) << std::endl;
+			// size_type	count = 0;
+			while (_pos_ptr <= last) {
+// std::cout << &(*pos) - last << std::endl;
+		// std::cout << capacity() << " " << last + n - _start << std::endl;
+				_alloc.construct(last + n, *last);
+				_alloc.destroy(last);
+				last--;
+			}
+			for (size_type i = 0; i < n; i++) {
+				_alloc.construct(_pos_ptr + i, value);
+			}
+			_end += n;
+		}
+
+// 		void			insert(iterator pos, size_type n, value_type const & value)
+// 		{
+// 			size_type	new_size = n + size();
+// // (void)value;
+// 			if (new_size > capacity()) {
+// 				reserve(new_size);
+// 			}
+// 			pointer		_pos_ptr = &(*pos);
+// 			pointer		last = _end + n - 1;
+
+// 			size_type	count = n;
+// 			while (last != _end - 1) {
+
+// 				_alloc.construct(last, *(last - n));
+// 				_alloc.destroy(last + 1);
+// 				last--;
+// 			}
+// 			for (size_type i = 0; i < count; i++) {
+// 				_alloc.construct(_pos_ptr + i, value);
+// 			}
+// 			_end += n;
+// 		}
+
+// 		void			insert(iterator pos, size_type n, value_type const & value)
+// 		{
+// 			size_type	new_size = n + size();
+// // (void)value;
+// 			if (new_size > capacity()) {
+// 				reserve(new_size);
+// 			}
+// 			size_type count = n - 1;
+// 			for (pointer ptr = _end; --n; ptr--) {
+// 				_alloc.construct(ptr + count, *ptr);
+// 				_alloc.destroy(ptr);
+// 			}
+// 			for (size_type i = 0; i < n; i++) {
+// 				_alloc.construct(&(*(pos + i)), value);
+// 			}
+// 			_end += n;
+// 		}
+
+		// template <class InputIterator>
+		// void			insert(iterator pos, InputIterator first, InputIterator last);
 
 
 		// erase
@@ -201,7 +310,7 @@ class vector
 	// Constructors
 	public:
 		explicit vector	(const allocator_type & alloc = allocator_type()) :
-			_start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
+						_start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
 		{
 		}
 
@@ -236,7 +345,13 @@ class vector
 
 		vector	(vector const & other)
 		{
-			*this = other;
+			_alloc = other.get_allocator();
+			// std::cout << _get_size(other.begin(), other.end()) << "get size\n";
+			_start = _alloc.allocate(_get_size(other.begin(), other.end()));
+			_end = _start;
+			assign(other.begin(), other.end());
+			_end_cap = _end;
+			// std::cout << size() << " size "<< _get_size(other.begin(), other.end()) << " get size\n";
 		}
 
 		vector &	operator = (vector const & other)
@@ -247,7 +362,11 @@ class vector
 			return *this;
 		}
 
-		~vector() { }
+		~vector()
+		{
+			clear();
+			_alloc.deallocate(_start, capacity());
+		}
 };
 
 }

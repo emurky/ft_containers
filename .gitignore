@@ -5,3 +5,5 @@ test
 mein.cpp
 *.txt
 *test*
+*branch*
+a.out
