@@ -44,12 +44,6 @@ class vector
 			while (pos != _end)
 				_alloc.destroy(--_end);
 		}
-	// void __vector_base<_Tp, _Allocator>::__destruct_at_end(pointer __new_last) _NOEXCEPT
-	// {
-	// 	pointer __soon_to_be_end = __end_;
-	// 	while (__new_last != __soon_to_be_end)
-	// 		__alloc_traits::destroy(__alloc(), _VSTD::__to_address(--__soon_to_be_end));
-	// }
 
 	// Member functions
 	public:

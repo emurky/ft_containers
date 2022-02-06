@@ -56,12 +56,11 @@ class iterator
 		iterator_type	_it;
 
 	public:
-		iterator() : _it(NULL)						{ }
+		iterator() : _it(NULL)										{ }
 		template <class Iter>
-		iterator(iterator<Iter> const & other)		{ *this = other; }
-		// iterator(pointer const ptr) : _it(ptr)	{ }
-		iterator(iterator_type const it) : _it(it)	{ }
-		~iterator()									{ }
+		iterator(iterator<Iter> const & other) : _it(other.base())	{ }
+		iterator(iterator_type const it) : _it(it)					{ }
+		~iterator()													{ }
 
 		iterator &		operator = (iterator const & other)
 		{
@@ -111,15 +110,13 @@ class reverse_iterator
 		iterator_type	_it;
 
 	public:
-		reverse_iterator() : _it(NULL)							{ }
+		reverse_iterator() : _it(NULL)												{ }
 		template <class Iter>
-		reverse_iterator(reverse_iterator<Iter> const & other)	{ *this = other; }
-		// reverse_iterator(pointer const ptr) : _it(ptr)		{ }
-		explicit reverse_iterator(iterator_type it) : _it(it)	{ }
-		~reverse_iterator()										{ }
+		reverse_iterator(reverse_iterator<Iter> const & other) : _it(other.base())	{ }
+		explicit reverse_iterator(iterator_type it) : _it(it)						{ }
+		~reverse_iterator()															{ }
 
-		template <class Iter>
-		reverse_iterator &	operator = (reverse_iterator<Iter> const & other)
+		reverse_iterator &	operator = (reverse_iterator const & other)
 		{
 			if (this != &other) {
 				_it = other._it;
