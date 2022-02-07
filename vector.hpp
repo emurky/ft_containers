@@ -2,7 +2,6 @@
 # define FT_VECTOR_HPP
 
 # include <memory>
-// # include <iostream>
 
 # include "iterator.hpp"
 # include "utils.hpp"
@@ -39,7 +38,7 @@ class vector
 	// Constructors
 	public:
 		explicit vector	(const allocator_type & alloc = allocator_type()) :
-						_start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
+			_start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
 		{
 		}
 
@@ -335,74 +334,31 @@ class vector
 			lhs.swap(rhs);
 		}
 
-		friend bool	operator == (const vector & lhs, const vector & rhs) {
+		friend bool	operator == (vector const & lhs, vector const & rhs) {
 			return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 		}
 
-		friend bool	operator != (const vector & lhs, const vector & rhs) {
+		friend bool	operator != (vector const & lhs, vector const & rhs) {
 			return !(lhs == rhs);
 		}
 
-		friend bool	operator < (const vector & lhs, const vector & rhs) {
+		friend bool	operator < (vector const & lhs, vector const & rhs) {
 			return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 		}
 
-		friend bool	operator <= (const vector & lhs, const vector & rhs) {
+		friend bool	operator <= (vector const & lhs, vector const & rhs) {
 			return	!(rhs < lhs);
 		}
 
-		friend bool	operator > (const vector & lhs, const vector & rhs) {
+		friend bool	operator > (vector const & lhs, vector const & rhs) {
 			return rhs < lhs;
 		}
 
-		friend bool	operator >= (const vector & lhs, const vector & rhs) {
+		friend bool	operator >= (vector const & lhs, vector const & rhs) {
 			return !(lhs < rhs);
 		}
 
 };
-
-	// // Non-member overloads
-	// template < class T, class Alloc >
-	// void	swap(ft::vector<T, Alloc> & lhs, ft::vector<T, Alloc> & rhs)
-	// {
-	// 	lhs.swap(rhs);
-	// }
-
-	// template <class T, class Alloc>
-	// bool	operator == (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
-	// {
-	// 	return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
-	// }
-
-	// template <class T, class Alloc>
-	// bool	operator != (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
-	// {
-	// 	return !(lhs == rhs);
-	// }
-
-	// template <class T, class Alloc>
-	// bool	operator < (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
-	// {
-	// 	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-	// }
-
-	// template <class T, class Alloc>
-	// bool	operator <= (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
-	// {
-	// 	return	!(rhs < lhs);
-	// }
-
-	// template <class T, class Alloc>
-	// bool	operator > (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
-	// {
-	// 	return rhs < lhs;
-	// }
-
-	// template <class T, class Alloc>
-	// bool	operator >= (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
-	// {
-	// 	return !(lhs < rhs);
-	// }
 
 }
 

@@ -96,31 +96,6 @@ class iterator
 		friend bool			operator >= (iterator const & lhs, iterator const & rhs)	{ return !(lhs < rhs); }
 };
 
-	// template < class Iter >
-	// iterator<Iter>	operator + (ptrdiff_t n, iterator<Iter> const & iter)				{ return iterator<Iter>(iter.base() + n); }
-
-	// template < class Iter >
-	// ptrdiff_t		operator - (iterator<Iter> const & it1, iterator<Iter> const & it2)	{ return it1.base() - it2.base(); }
-
-
-	// template < class Iter >
-	// bool		operator == (iterator<Iter> const & lhs, iterator<Iter> const & rhs)	{ return lhs.base() == rhs.base(); }
-
-	// template < class Iter >
-	// bool		operator != (iterator<Iter> const & lhs, iterator<Iter> const & rhs)	{ return !(lhs == rhs); }
-
-	// template < class Iter >
-	// bool		operator < (iterator<Iter> const & lhs, iterator<Iter> const & rhs)		{ return lhs.base() < rhs.base(); }
-
-	// template < class Iter >
-	// bool		operator > (iterator<Iter> const & lhs, iterator<Iter> const & rhs)		{ return rhs < lhs; }
-
-	// template < class Iter >
-	// bool		operator <= (iterator<Iter> const & lhs, iterator<Iter> const & rhs)	{ return !(rhs < lhs); }
-
-	// template < class Iter >
-	// bool		operator >= (iterator<Iter> const & lhs, iterator<Iter> const & rhs)	{ return !(lhs < rhs); }
-
 
 template < class Iterator >
 class reverse_iterator
@@ -175,31 +150,6 @@ class reverse_iterator
 		friend bool			operator <= (reverse_iterator const & lhs, reverse_iterator const & rhs)	{ return lhs.base() >= rhs.base(); }
 		friend bool			operator >= (reverse_iterator const & lhs, reverse_iterator const & rhs)	{ return lhs.base() <= rhs.base(); }
 };
-
-	// template < class Iter >
-	// reverse_iterator<Iter>	operator + (ptrdiff_t n, reverse_iterator<Iter> const & iter)						{ return reverse_iterator<Iter>(iter.base() - n); }
-
-	// template < class Iter >
-	// ptrdiff_t				operator - (reverse_iterator<Iter> const & it1, reverse_iterator<Iter> const & it2)	{ return it2.base() - it1.base(); }
-
-
-	// template < class Iter >
-	// bool		operator == (reverse_iterator<Iter> const & lhs, reverse_iterator<Iter> const & rhs)	{ return lhs.base() == rhs.base(); }
-
-	// template < class Iter >
-	// bool		operator != (reverse_iterator<Iter> const & lhs, reverse_iterator<Iter> const & rhs)	{ return lhs.base() != rhs.base(); }
-
-	// template < class Iter >
-	// bool		operator < (reverse_iterator<Iter> const & lhs, reverse_iterator<Iter> const & rhs)		{ return lhs.base() > rhs.base(); }
-
-	// template < class Iter >
-	// bool		operator > (reverse_iterator<Iter> const & lhs, reverse_iterator<Iter> const & rhs)		{ return lhs.base() < rhs.base(); }
-
-	// template < class Iter >
-	// bool		operator <= (reverse_iterator<Iter>const & lhs, reverse_iterator<Iter> const & rhs)		{ return lhs.base() >= rhs.base(); }
-
-	// template < class Iter >
-	// bool		operator >= (reverse_iterator<Iter> const & lhs, reverse_iterator<Iter> const & rhs)	{ return lhs.base() <= rhs.base(); }
 
 }
 
