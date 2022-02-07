@@ -104,37 +104,35 @@ class vector
 
 		void			resize (size_type n, value_type value = value_type())
 		{
-			size_type	size = size();
-			if (n < size) {
+			if (n < size()) {
 				_destroy_after_pos(_start + n);
 			}
 			else if (n > capacity()) {
 				reserve(n);
 			}
-			while (size < n) {
-				_alloc.construct(_start + size, value);
-				size++;
+			while (_end < _start + n) {
+				_alloc.construct(_end, value);
+				_end++;
 			}
-			_end = _start + size;
 		}
 
 		void			reserve(size_type n)
 		{
 			pointer		new_ptr;
-			size_type	size = this->size();
+			size_type	_size = size();
 
 			if (n <= capacity())
 				return ;
 			if (n > max_size())
 				throw std::length_error("vector::reserve()::length_error");
 			new_ptr = _alloc.allocate(n);
-			for (size_type i = 0; i < size; i++) {
+			for (size_type i = 0; i < _size; i++) {
 				_alloc.construct(new_ptr + i, *(_start + i));
 				_alloc.destroy(_start + i);
 			}
 			_alloc.deallocate(_start, capacity());
 			_start = new_ptr;
-			_end = _start + size;
+			_end = _start + _size;
 			_end_cap = _start + n;
 		}
 
@@ -232,6 +230,17 @@ class vector
 
 		iterator		erase(iterator pos)
 		{
+			// pointer		ptr = &(*pos);
+
+			// _alloc.destroy(ptr);
+			// _move_backward(ptr + 1, _end, 1);
+			// _end--;
+			// return pos;
+			// if (pos == end() - 1) {
+			// 	pop_back();
+			// 	return end();
+			// }
+
 			return erase(pos, pos + 1);
 		}
 
@@ -271,14 +280,14 @@ class vector
 		{
 			if (n >= size())
 				throw std::out_of_range("vector::at()::out_of_range");
-			return	_start;
+			return	_start[n];
 		}
 
 		const_reference	at (size_type n) const
 		{
 			if (n >= size())
 				throw std::out_of_range("vector::at()::out_of_range");
-			return	_start;
+			return	_start[n];
 		}
 
 		// pointer			data()							{ return _start; }
@@ -334,6 +343,7 @@ class vector
 
 };
 
+	// Non-member overloads
 	template < class T, class Alloc >
 	void	swap(ft::vector<T, Alloc> & lhs, ft::vector<T, Alloc> & rhs)
 	{
@@ -343,7 +353,7 @@ class vector
 	template <class T, class Alloc>
 	bool	operator == (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
 	{
-		return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+		return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 	}
 
 	template <class T, class Alloc>
