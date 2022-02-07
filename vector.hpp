@@ -139,7 +139,7 @@ class vector
 		}
 
 	// Modifiers
-		template <class InputIterator>
+		template < class InputIterator >
 		void			assign(InputIterator first, InputIterator last,
 								typename ft::enable_if <!ft::is_integral<InputIterator>::value>::type * = 0)
 		{
@@ -212,7 +212,7 @@ class vector
 			_end += count;
 		}
 
-		template <class InputIterator>
+		template < class InputIterator >
 		void			insert(iterator pos, InputIterator first, InputIterator last,
 						typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
 		{
@@ -249,6 +249,13 @@ class vector
 			return it - range;
 		}
 
+		void			swap(vector & other)
+		{
+			ft::swap(_start, other._start);
+			ft::swap(_end, other._end);
+			ft::swap(_end_cap, other._end_cap);
+		}
+
 		void			clear()							{ _destroy_after_pos(_start); }
 		allocator_type	get_allocator() const			{ return _alloc; }
 
@@ -278,14 +285,14 @@ class vector
 		// pointer const	data() const					{ return _start; }
 
 	// Iterators
-		iterator				begin()					{ return iterator(_start); }
-		const_iterator			begin() const			{ return iterator(_start); }
-		iterator				end()					{ return iterator(_end); }
-		const_iterator			end() const				{ return iterator(_end); }
-		reverse_iterator		rbegin()				{ return reverse_iterator(_end); }
-		const_reverse_iterator	rbegin() const			{ return reverse_iterator(_end); }
-		reverse_iterator		rend()					{ return reverse_iterator(_start); }
-		const_reverse_iterator	rend() const			{ return reverse_iterator(_start); }
+		iterator				begin()			{ return iterator(_start); }
+		const_iterator			begin() const	{ return iterator(_start); }
+		iterator				end()			{ return iterator(_end); }
+		const_iterator			end() const		{ return iterator(_end); }
+		reverse_iterator		rbegin()		{ return reverse_iterator(_end); }
+		const_reverse_iterator	rbegin() const	{ return reverse_iterator(_end); }
+		reverse_iterator		rend()			{ return reverse_iterator(_start); }
+		const_reverse_iterator	rend() const	{ return reverse_iterator(_start); }
 
 	// Private member functions
 	private:
@@ -326,6 +333,48 @@ class vector
 		}
 
 };
+
+	template < class T, class Alloc >
+	void	swap(ft::vector<T, Alloc> & lhs, ft::vector<T, Alloc> & rhs)
+	{
+		lhs.swap(rhs);
+	}
+
+	template <class T, class Alloc>
+	bool	operator == (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
+	{
+		return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+	}
+
+	template <class T, class Alloc>
+	bool	operator != (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
+	{
+		return !(lhs == rhs);
+	}
+
+	template <class T, class Alloc>
+	bool	operator < (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
+	{
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+	}
+
+	template <class T, class Alloc>
+	bool	operator <= (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
+	{
+		return	!(rhs < lhs);
+	}
+
+	template <class T, class Alloc>
+	bool	operator > (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
+	{
+		return rhs < lhs;
+	}
+
+	template <class T, class Alloc>
+	bool	operator >= (const vector<T, Alloc> & lhs, const vector<T, Alloc> & rhs)
+	{
+		return !(lhs < rhs);
+	}
 
 }
 
