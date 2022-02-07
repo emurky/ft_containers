@@ -2,9 +2,7 @@
 # define FT_VECTOR_HPP
 
 # include <memory>
-# include <iostream> ///////////
-
-// # include <vector> // delete
+// # include <iostream>
 
 # include "iterator.hpp"
 # include "utils.hpp"
@@ -38,58 +36,67 @@ class vector
 		pointer			_end_cap;
 		allocator_type	_alloc;
 
-	// Private member functions
-	private:
-		void			_destroy_after_pos(pointer pos)
+	// Constructors
+	public:
+		explicit vector	(const allocator_type & alloc = allocator_type()) :
+						_start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
 		{
-			while (pos != _end)
-				_alloc.destroy(--_end);
 		}
 
-		template < class Iterator >
-		size_type		_get_size(Iterator first, Iterator last)
+		explicit vector	(size_type count, const value_type & value = value_type(),
+						const allocator_type & alloc = allocator_type())
 		{
-			size_type	size = 0;
+			_alloc = alloc;
+			_start = _alloc.allocate(count);
+			_end = _start + count;
+			_end_cap = _end;
+			for (pointer it = _start; it < _end; it++) {
+				_alloc.construct(it, value);
+			}
+		}
 
+		template < class InputIterator >
+		vector	(InputIterator first, InputIterator last,
+				const allocator_type & alloc = allocator_type(),
+				typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+		{
+			_alloc = alloc;
+			_start = _alloc.allocate(_get_size(first, last));
+			_end = _start;
 			while (first != last) {
+				_alloc.construct(_end, *first);
 				first++;
-				size++;
+				_end++;
 			}
-			return size;
+			_end_cap = _end;
 		}
 
-		void			_move_forward(pointer first, pointer last, size_type offset)
+		vector	(vector const & other)
 		{
-			while (first <= last) {
-				_alloc.construct(last + offset, *last);
-				_alloc.destroy(last);
-				last--;
-			}
+			_alloc = other.get_allocator();
+			_start = _alloc.allocate(_get_size(other.begin(), other.end()));
+			_end = _start;
+			assign(other.begin(), other.end());
+			_end_cap = _end;
 		}
 
-		void			_move_backward(pointer first, pointer last, size_type offset)
+		vector &		operator = (vector const & other)
 		{
-			while (first < last) {
-				_alloc.construct(first - offset, *first);
-				_alloc.destroy(first);
-				first++;
+			if (this != &other) {
+				assign(other.begin(), other.end());
 			}
+			return *this;
+		}
+
+		~vector()
+		{
+			clear();
+			_alloc.deallocate(_start, capacity());
 		}
 
 	// Member functions
-	public:
 
-	//Iterators
-		iterator				begin()				{ return iterator(_start); }
-		const_iterator			begin() const		{ return iterator(_start); }
-		iterator				end()				{ return iterator(_end); }
-		const_iterator			end() const			{ return iterator(_end); }
-		reverse_iterator		rbegin()			{ return reverse_iterator(_end); }
-		const_reverse_iterator	rbegin() const		{ return reverse_iterator(_end); }
-		reverse_iterator		rend()				{ return reverse_iterator(_start); }
-		const_reverse_iterator	rend() const		{ return reverse_iterator(_start); }
-
-	//Capacity
+	// Capacity
 		size_type		size() const		{ return static_cast<size_type>(_end - _start); }
 		size_type		capacity() const	{ return static_cast<size_type>(_end_cap - _start); }
 		size_type		max_size() const	{ return _alloc.max_size(); }
@@ -131,7 +138,7 @@ class vector
 			_end_cap = _start + n;
 		}
 
-	//Modifiers
+	// Modifiers
 		template <class InputIterator>
 		void			assign(InputIterator first, InputIterator last,
 								typename ft::enable_if <!ft::is_integral<InputIterator>::value>::type * = 0)
@@ -242,11 +249,10 @@ class vector
 			return it - range;
 		}
 
-		// swap
 		void			clear()							{ _destroy_after_pos(_start); }
 		allocator_type	get_allocator() const			{ return _alloc; }
 
-	//Element access
+	// Element access
 		reference		front()							{ return *_start; }
 		const_reference	front() const					{ return *_start; }
 		reference		back()							{ return *(_end - 1); }
@@ -271,63 +277,54 @@ class vector
 		// pointer			data()							{ return _start; }
 		// pointer const	data() const					{ return _start; }
 
-	// Constructors
-	public:
-		explicit vector	(const allocator_type & alloc = allocator_type()) :
-						_start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
+	// Iterators
+		iterator				begin()					{ return iterator(_start); }
+		const_iterator			begin() const			{ return iterator(_start); }
+		iterator				end()					{ return iterator(_end); }
+		const_iterator			end() const				{ return iterator(_end); }
+		reverse_iterator		rbegin()				{ return reverse_iterator(_end); }
+		const_reverse_iterator	rbegin() const			{ return reverse_iterator(_end); }
+		reverse_iterator		rend()					{ return reverse_iterator(_start); }
+		const_reverse_iterator	rend() const			{ return reverse_iterator(_start); }
+
+	// Private member functions
+	private:
+		void			_destroy_after_pos(pointer pos)
 		{
+			while (pos != _end)
+				_alloc.destroy(--_end);
 		}
 
-		explicit vector	(size_type count, const value_type & value = value_type(),
-						const allocator_type & alloc = allocator_type())
+		template < class Iterator >
+		size_type		_get_size(Iterator first, Iterator last)
 		{
-			_alloc = alloc;
-			_start = _alloc.allocate(count);
-			_end = _start + count;
-			_end_cap = _end;
-			for (pointer it = _start; it < _end; it++) {
-				_alloc.construct(it, value);
-			}
-		}
+			size_type	size = 0;
 
-		template < class InputIterator >
-		vector	(InputIterator first, InputIterator last,
-				const allocator_type & alloc = allocator_type(),
-				typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
-		{
-			_alloc = alloc;
-			_start = _alloc.allocate(_get_size(first, last));
-			_end = _start;
 			while (first != last) {
-				_alloc.construct(_end, *first);
 				first++;
-				_end++;
+				size++;
 			}
-			_end_cap = _end;
+			return size;
 		}
 
-		vector	(vector const & other)
+		void			_move_forward(pointer first, pointer last, size_type offset)
 		{
-			_alloc = other.get_allocator();
-			_start = _alloc.allocate(_get_size(other.begin(), other.end()));
-			_end = _start;
-			assign(other.begin(), other.end());
-			_end_cap = _end;
-		}
-
-		vector &	operator = (vector const & other)
-		{
-			if (this != &other) {
-				assign(other.begin(), other.end());
+			while (first <= last) {
+				_alloc.construct(last + offset, *last);
+				_alloc.destroy(last);
+				last--;
 			}
-			return *this;
 		}
 
-		~vector()
+		void			_move_backward(pointer first, pointer last, size_type offset)
 		{
-			clear();
-			_alloc.deallocate(_start, capacity());
+			while (first < last) {
+				_alloc.construct(first - offset, *first);
+				_alloc.destroy(first);
+				first++;
+			}
 		}
+
 };
 
 }
