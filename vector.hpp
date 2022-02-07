@@ -58,6 +58,24 @@ class vector
 			return size;
 		}
 
+		void			_move_forward(pointer first, pointer last, size_type offset)
+		{
+			while (first <= last) {
+				_alloc.construct(last + offset, *last);
+				_alloc.destroy(last);
+				last--;
+			}
+		}
+
+		void			_move_backward(pointer first, pointer last, size_type offset)
+		{
+			while (first < last) {
+				_alloc.construct(first - offset, *first);
+				_alloc.destroy(first);
+				first++;
+			}
+		}
+
 	// Member functions
 	public:
 
@@ -101,7 +119,7 @@ class vector
 			if (n <= capacity())
 				return ;
 			if (n > max_size())
-				throw std::length_error("reserve()::length_error");
+				throw std::length_error("vector::reserve()::length_error");
 			new_ptr = _alloc.allocate(n);
 			for (size_type i = 0; i < size; i++) {
 				_alloc.construct(new_ptr + i, *(_start + i));
@@ -161,123 +179,69 @@ class vector
 			_alloc.destroy(_end);
 		}
 
-		// iterator	insert(iterator pos, value_type const & value);
-
-		// void			_move_elements(pointer first, pointer last, difference_type offset)
-		// {
-		// 	if (offset > 0) {
-		// 		while (first != last) {
-		// 			_alloc.construct(last + offset, *last);
-		// 			_alloc.destroy(last);
-		// 			last--;
-		// 		}
-		// 	}
-		// 	else if (offset < 0) {
-		// 		while (first != last) {
-		// 			_alloc.construct(first + offset, *first);
-		// 			_alloc.destroy(first);
-		// 			first++;
-		// 		}
-		// 	}
-		// }
-
-		void			_move_forward(iterator first, size_type count)
+		iterator		insert(iterator pos, value_type const & value)
 		{
-			while (--count) {
-				_alloc.construct(first + count + count, *first);
-				_alloc.destroy(first++);
-			}
+			size_type	index = static_cast<size_type>(pos - begin());
 
-			// while (&(*first) <= &(*last)) {
-			// 	// std::cout << *(last + offset) << std::endl;
-			// 	_alloc.construct(last + offset, *last);
-			// 	_alloc.destroy(last);
-			// 	last--;
-			// }
+			insert(pos, 1, value);
+			return iterator(_start + index);
 		}
 
-		void			_move_backward(pointer first, pointer last, difference_type offset)
+		void			insert(iterator pos, size_type count, value_type const & value)
 		{
-			while (first != last) {
-				_alloc.construct(first - offset, *first);
-				_alloc.destroy(first);
-				first++;
-			}
-		}
+			size_type	new_size = count + size();
+			size_type	index = static_cast<size_type>(pos - begin());
 
-		void			insert(iterator pos, size_type n, value_type const & value)
-		{
-			size_type	new_size = n + size();
-// (void)value;
-			difference_type index = pos - begin();
 			if (new_size > capacity()) {
-				// std::cout <<  size() << " size " << capacity() << " capacity " << n << " reserve\n";
-				reserve(new_size);
-				// std::cout <<  size() << " size " << capacity() << " capacity " << n << " reserve\n";
+				if (count == 1) {
+					reserve(2 * capacity()); }
+				else {
+					reserve(new_size); }
 			}
-			pointer		_pos_ptr = _start + index;
-			pointer		last = _end - 1;
-// std::cout << _start << " start " << _pos_ptr << " " << &(*pos) << " " << &(*pos) - last << " " << (&(*pos) - _start) << std::endl;
-			// size_type	count = 0;
-			while (_pos_ptr <= last) {
-// std::cout << &(*pos) - last << std::endl;
-		// std::cout << capacity() << " " << last + n - _start << std::endl;
-				_alloc.construct(last + n, *last);
-				_alloc.destroy(last);
-				last--;
+			_move_forward(_start + index, _end - 1, count);
+			for (size_type i = index; i < count + index; i++) {
+				_alloc.construct(_start + i, value);
 			}
-			for (size_type i = 0; i < n; i++) {
-				_alloc.construct(_pos_ptr + i, value);
-			}
-			_end += n;
+			_end += count;
 		}
 
-// 		void			insert(iterator pos, size_type n, value_type const & value)
-// 		{
-// 			size_type	new_size = n + size();
-// // (void)value;
-// 			if (new_size > capacity()) {
-// 				reserve(new_size);
-// 			}
-// 			pointer		_pos_ptr = &(*pos);
-// 			pointer		last = _end + n - 1;
+		template <class InputIterator>
+		void			insert(iterator pos, InputIterator first, InputIterator last,
+						typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+		{
+			size_type	count = _get_size(first, last);
+			size_type	new_size = count + size();
+			size_type	index = static_cast<size_type>(pos - begin());
 
-// 			size_type	count = n;
-// 			while (last != _end - 1) {
+			if (new_size > capacity()) {
+				reserve(new_size);
+			}
+			_move_forward(_start + index, _end - 1, count);
+			for (size_type i = index; i < count + index; i++) {
+				_alloc.construct(_start + i, *first++);
+			}
+			_end += count;
+		}
 
-// 				_alloc.construct(last, *(last - n));
-// 				_alloc.destroy(last + 1);
-// 				last--;
-// 			}
-// 			for (size_type i = 0; i < count; i++) {
-// 				_alloc.construct(_pos_ptr + i, value);
-// 			}
-// 			_end += n;
-// 		}
+		iterator		erase(iterator pos)
+		{
+			return erase(pos, pos + 1);
+		}
 
-// 		void			insert(iterator pos, size_type n, value_type const & value)
-// 		{
-// 			size_type	new_size = n + size();
-// // (void)value;
-// 			if (new_size > capacity()) {
-// 				reserve(new_size);
-// 			}
-// 			size_type count = n - 1;
-// 			for (pointer ptr = _end; --n; ptr--) {
-// 				_alloc.construct(ptr + count, *ptr);
-// 				_alloc.destroy(ptr);
-// 			}
-// 			for (size_type i = 0; i < n; i++) {
-// 				_alloc.construct(&(*(pos + i)), value);
-// 			}
-// 			_end += n;
-// 		}
+		iterator		erase(iterator first, iterator last)
+		{
+			size_type	range = last - first;
 
-		// template <class InputIterator>
-		// void			insert(iterator pos, InputIterator first, InputIterator last);
+			iterator it = first;
+			while (it < last) {
+				_alloc.destroy(it.base());
+				it++;
+			}
+			_move_backward(it.base(), _end, range);
+			_end -= range;
+			return it - range;
+		}
 
-
-		// erase
 		// swap
 		void			clear()							{ _destroy_after_pos(_start); }
 		allocator_type	get_allocator() const			{ return _alloc; }
@@ -293,14 +257,14 @@ class vector
 		reference		at (size_type n)
 		{
 			if (n >= size())
-				throw std::out_of_range("vector");
+				throw std::out_of_range("vector::at()::out_of_range");
 			return	_start;
 		}
 
 		const_reference	at (size_type n) const
 		{
 			if (n >= size())
-				throw std::out_of_range("vector");
+				throw std::out_of_range("vector::at()::out_of_range");
 			return	_start;
 		}
 
@@ -321,8 +285,7 @@ class vector
 			_start = _alloc.allocate(count);
 			_end = _start + count;
 			_end_cap = _end;
-			for (pointer it = _start; it < _end; it++)
-			{
+			for (pointer it = _start; it < _end; it++) {
 				_alloc.construct(it, value);
 			}
 		}
@@ -346,12 +309,10 @@ class vector
 		vector	(vector const & other)
 		{
 			_alloc = other.get_allocator();
-			// std::cout << _get_size(other.begin(), other.end()) << "get size\n";
 			_start = _alloc.allocate(_get_size(other.begin(), other.end()));
 			_end = _start;
 			assign(other.begin(), other.end());
 			_end_cap = _end;
-			// std::cout << size() << " size "<< _get_size(other.begin(), other.end()) << " get size\n";
 		}
 
 		vector &	operator = (vector const & other)
