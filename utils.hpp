@@ -82,6 +82,7 @@ bool		equal(InputIterator1 first1, InputIterator1 last1,
 	return true;
 }
 
+
 template < typename T >
 void		swap(T & a, T & b)
 {
