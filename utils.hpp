@@ -75,11 +75,66 @@ bool		equal(InputIterator1 first1, InputIterator1 last1,
 					InputIterator2 first2, BinaryPredicate pred)
 {
 	while (first1 != last1) {
-		if (!pred(*first1,*first2))
+		if (!pred(*first1, *first2))
 			return false;
 		++first1; ++first2;
 	}
 	return true;
+}
+
+template < class T1, class T2 >
+struct pair
+{
+	typedef T1		first_type;
+	typedef T2		second_type;
+
+	first_type		first;
+	second_type		second;
+
+	pair()								: first(), second()					 { }
+
+	pair (T1 const & a, T2 const & b)	: first(a), second(b)				 { }
+
+	template < class U1, class U2 >
+	pair (pair<U1,U2> const & pr)		: first(pr.first), second(pr.second) { }
+
+	pair &	operator = (pair const & other)
+	{
+		first = other.first;
+		second = other.second;
+		return *this;
+	}
+
+	friend bool		operator == (pair const & lhs, pair const & rhs) {
+		return lhs.first == rhs.first && lhs.second == rhs.second;
+	}
+
+	friend bool		operator != (pair const & lhs, pair const & rhs) {
+		return !(lhs == rhs);
+	}
+
+	friend bool		operator < (pair const & lhs, pair const & rhs) {
+		return lhs.first < rhs.first || (!(rhs.first < lhs.first) && lhs.second < rhs.second);
+	}
+
+	friend bool		operator <= (pair const & lhs, pair const & rhs) {
+		return !(rhs < lhs);
+	}
+
+	friend bool		operator > (pair const & lhs, pair const & rhs) {
+		return rhs < lhs;
+	}
+
+	friend bool		operator >= (pair const & lhs, pair const & rhs) {
+		return !(lhs < rhs);
+	}
+
+};
+
+template < class T1,class T2 >
+pair<T1,T2>	make_pair(T1 x, T2 y)
+{
+	return (pair<T1,T2>(x, y));
 }
 
 

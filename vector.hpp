@@ -330,10 +330,6 @@ class vector
 		}
 
 	// Non-member overloads
-		friend void	swap(vector & lhs, vector & rhs) {
-			lhs.swap(rhs);
-		}
-
 		friend bool	operator == (vector const & lhs, vector const & rhs) {
 			return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 		}
@@ -359,6 +355,11 @@ class vector
 		}
 
 };
+
+	template < class T, class Alloc >
+	void	swap(vector<T, Alloc> & lhs, vector<T, Alloc> & rhs) {
+		lhs.swap(rhs);
+	}
 
 }
 
