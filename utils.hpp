@@ -82,6 +82,7 @@ bool		equal(InputIterator1 first1, InputIterator1 last1,
 	return true;
 }
 
+
 template < class T1, class T2 >
 struct pair
 {
@@ -136,6 +137,23 @@ pair<T1,T2>	make_pair(T1 x, T2 y)
 {
 	return (pair<T1,T2>(x, y));
 }
+
+
+template <class Arg1, class Arg2, class Result>
+struct binary_function
+{
+	typedef Arg1		first_argument_type;
+	typedef Arg2		second_argument_type;
+	typedef Result		result_type;
+};
+
+template < class T >
+struct		less : public binary_function<T, T, bool>
+{
+	bool	operator() (T const & lhs, T const & rhs) const {
+		return lhs < rhs;
+	}
+};
 
 
 template < typename T >

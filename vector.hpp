@@ -37,13 +37,13 @@ class vector
 
 	// Constructors
 	public:
-		explicit vector	(const allocator_type & alloc = allocator_type()) :
+		explicit vector	(allocator_type const & alloc = allocator_type()) :
 			_start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
 		{
 		}
 
-		explicit vector	(size_type count, const value_type & value = value_type(),
-						const allocator_type & alloc = allocator_type())
+		explicit vector	(size_type count, value_type const & value = value_type(),
+						 allocator_type const & alloc = allocator_type())
 		{
 			_alloc = alloc;
 			_start = _alloc.allocate(count);
@@ -56,8 +56,8 @@ class vector
 
 		template < class InputIterator >
 		vector	(InputIterator first, InputIterator last,
-				const allocator_type & alloc = allocator_type(),
-				typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+				 allocator_type const & alloc = allocator_type(),
+				 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
 		{
 			_alloc = alloc;
 			_start = _alloc.allocate(_get_size(first, last));
@@ -101,7 +101,7 @@ class vector
 		size_type		max_size() const	{ return _alloc.max_size(); }
 		bool			empty() const		{ return _start == _end; }
 
-		void			resize (size_type n, value_type value = value_type())
+		void			resize(size_type n, value_type value = value_type())
 		{
 			if (n < size()) {
 				_destroy_after_pos(_start + n);
@@ -357,7 +357,8 @@ class vector
 };
 
 	template < class T, class Alloc >
-	void	swap(vector<T, Alloc> & lhs, vector<T, Alloc> & rhs) {
+	void	swap(vector<T, Alloc> & lhs, vector<T, Alloc> & rhs)
+	{
 		lhs.swap(rhs);
 	}
 
