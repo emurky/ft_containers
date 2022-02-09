@@ -5,14 +5,14 @@ namespace ft
 
 {
 
-struct output_iterator_tag												{ };
-struct input_iterator_tag												{ };
-struct forward_iterator_tag			: public input_iterator_tag			{ };
-struct bidirectional_iterator_tag	: public forward_iterator_tag		{ };
-struct random_access_iterator_tag	: public bidirectional_iterator_tag	{ };
+struct	output_iterator_tag												{ };
+struct	input_iterator_tag												{ };
+struct	forward_iterator_tag		: public input_iterator_tag			{ };
+struct	bidirectional_iterator_tag	: public forward_iterator_tag		{ };
+struct	random_access_iterator_tag	: public bidirectional_iterator_tag	{ };
 
 template < class Iterator >
-struct iterator_traits
+struct	iterator_traits
 {
 	typedef typename Iterator::difference_type		difference_type;
 	typedef typename Iterator::value_type			value_type;
@@ -22,7 +22,7 @@ struct iterator_traits
 };
 
 template < class T >
-struct iterator_traits< T * >
+struct	iterator_traits< T * >
 {
 	typedef ptrdiff_t					difference_type;
 	typedef T							value_type;
@@ -32,7 +32,7 @@ struct iterator_traits< T * >
 };
 
 template < class T >
-struct iterator_traits< T const * >
+struct	iterator_traits< T const * >
 {
 	typedef ptrdiff_t					difference_type;
 	typedef T const						value_type;
@@ -43,7 +43,7 @@ struct iterator_traits< T const * >
 
 
 template < class Iterator >
-class iterator
+class	iterator
 {
 	public:
 		typedef Iterator													iterator_type;
@@ -53,7 +53,7 @@ class iterator
 		typedef typename iterator_traits<iterator_type>::pointer			pointer;
 		typedef typename iterator_traits<iterator_type>::reference			reference;
 
-	private:
+	protected:
 		iterator_type	_it;
 
 	public:
@@ -88,17 +88,17 @@ class iterator
 		friend iterator			operator + (difference_type n, iterator const & iter)	{ return iterator(iter.base() + n); }
 		friend difference_type	operator - (iterator const & it1, iterator const & it2)	{ return it1.base() - it2.base(); }
 
-		friend bool			operator == (iterator const & lhs, iterator const & rhs)	{ return lhs._it == rhs._it; }
-		friend bool			operator != (iterator const & lhs, iterator const & rhs)	{ return !(lhs == rhs); }
-		friend bool			operator < (iterator const & lhs, iterator const & rhs)		{ return lhs._it < rhs._it; }
-		friend bool			operator > (iterator const & lhs, iterator const & rhs)		{ return rhs < lhs; }
-		friend bool			operator <= (iterator const & lhs, iterator const & rhs)	{ return !(rhs < lhs); }
-		friend bool			operator >= (iterator const & lhs, iterator const & rhs)	{ return !(lhs < rhs); }
+		friend	bool	operator == (iterator const & lhs, iterator const & rhs)	{ return lhs._it == rhs._it; }
+		friend	bool	operator != (iterator const & lhs, iterator const & rhs)	{ return !(lhs == rhs); }
+		friend	bool	operator < (iterator const & lhs, iterator const & rhs)		{ return lhs._it < rhs._it; }
+		friend	bool	operator > (iterator const & lhs, iterator const & rhs)		{ return rhs < lhs; }
+		friend	bool	operator <= (iterator const & lhs, iterator const & rhs)	{ return !(rhs < lhs); }
+		friend	bool	operator >= (iterator const & lhs, iterator const & rhs)	{ return !(lhs < rhs); }
 };
 
 
 template < class Iterator >
-class reverse_iterator
+class	reverse_iterator
 {
 	public:
 		typedef Iterator													iterator_type;
@@ -108,7 +108,7 @@ class reverse_iterator
 		typedef typename iterator_traits<iterator_type>::pointer			pointer;
 		typedef typename iterator_traits<iterator_type>::reference			reference;
 
-	private:
+	protected:
 		iterator_type	_it;
 
 	public:
@@ -143,12 +143,12 @@ class reverse_iterator
 		friend reverse_iterator	operator + (difference_type n, reverse_iterator const & iter)			{ return reverse_iterator(iter.base() - n); }
 		friend difference_type	operator - (reverse_iterator const & it1, reverse_iterator const & it2)	{ return it2.base() - it1.base(); }
 
-		friend bool			operator == (reverse_iterator const & lhs, reverse_iterator const & rhs)	{ return lhs.base() == rhs.base(); }
-		friend bool			operator != (reverse_iterator const & lhs, reverse_iterator const & rhs)	{ return lhs.base() != rhs.base(); }
-		friend bool			operator < (reverse_iterator const & lhs, reverse_iterator const & rhs)		{ return lhs.base() > rhs.base(); }
-		friend bool			operator > (reverse_iterator const & lhs, reverse_iterator const & rhs)		{ return lhs.base() < rhs.base(); }
-		friend bool			operator <= (reverse_iterator const & lhs, reverse_iterator const & rhs)	{ return lhs.base() >= rhs.base(); }
-		friend bool			operator >= (reverse_iterator const & lhs, reverse_iterator const & rhs)	{ return lhs.base() <= rhs.base(); }
+		friend	bool		operator == (reverse_iterator const & lhs, reverse_iterator const & rhs)	{ return lhs.base() == rhs.base(); }
+		friend	bool		operator != (reverse_iterator const & lhs, reverse_iterator const & rhs)	{ return lhs.base() != rhs.base(); }
+		friend	bool		operator < (reverse_iterator const & lhs, reverse_iterator const & rhs)		{ return lhs.base() > rhs.base(); }
+		friend	bool		operator > (reverse_iterator const & lhs, reverse_iterator const & rhs)		{ return lhs.base() < rhs.base(); }
+		friend	bool		operator <= (reverse_iterator const & lhs, reverse_iterator const & rhs)	{ return lhs.base() >= rhs.base(); }
+		friend	bool		operator >= (reverse_iterator const & lhs, reverse_iterator const & rhs)	{ return lhs.base() <= rhs.base(); }
 };
 
 }

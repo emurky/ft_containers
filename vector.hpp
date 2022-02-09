@@ -11,7 +11,7 @@ namespace	ft
 {
 
 template < class T, class Allocator = std::allocator<T> >
-class vector
+class	vector
 {
 	// Type definitions
 	public:
@@ -68,7 +68,7 @@ class vector
 		vector	(vector const & other)
 		{
 			_alloc = other.get_allocator();
-			_start = _alloc.allocate(_get_size(other.begin(), other.end()));
+			_start = _alloc.allocate(other.size());
 			_end = _start;
 			assign(other.begin(), other.end());
 			_end_cap = _end;
@@ -220,11 +220,6 @@ class vector
 				_alloc.construct(_start + index + i, tmp[i]);
 			}
 			_end += count;
-			// while (first != last) {
-			// 	pos = insert(pos, *first);
-			// 	first++;
-			// 	pos++;
-			// }
 		}
 
 		iterator		erase(iterator pos)
@@ -248,9 +243,9 @@ class vector
 
 		void			swap(vector & other)
 		{
-			ft::swap(_start, other._start);
-			ft::swap(_end, other._end);
-			ft::swap(_end_cap, other._end_cap);
+			std::swap(_start, other._start);
+			std::swap(_end, other._end);
+			std::swap(_end_cap, other._end_cap);
 		}
 
 		void			clear()							{ _destroy_after_pos(_start); }
@@ -299,18 +294,6 @@ class vector
 				_alloc.destroy(--_end);
 		}
 
-		template < class Iterator >
-		size_type		_get_size(Iterator first, Iterator last)
-		{
-			size_type	size = 0;
-
-			while (first != last) {
-				first++;
-				size++;
-			}
-			return size;
-		}
-
 		void			_move_forward(pointer first, pointer last, size_type offset)
 		{
 			std::rotate(first, last, last + offset);
@@ -322,27 +305,27 @@ class vector
 		}
 
 	// Non-member overloads
-		friend bool	operator == (vector const & lhs, vector const & rhs) {
+		friend	bool	operator == (vector const & lhs, vector const & rhs) {
 			return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 		}
 
-		friend bool	operator != (vector const & lhs, vector const & rhs) {
+		friend	bool	operator != (vector const & lhs, vector const & rhs) {
 			return !(lhs == rhs);
 		}
 
-		friend bool	operator < (vector const & lhs, vector const & rhs) {
+		friend	bool	operator < (vector const & lhs, vector const & rhs) {
 			return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 		}
 
-		friend bool	operator <= (vector const & lhs, vector const & rhs) {
+		friend	bool	operator <= (vector const & lhs, vector const & rhs) {
 			return	!(rhs < lhs);
 		}
 
-		friend bool	operator > (vector const & lhs, vector const & rhs) {
+		friend	bool	operator > (vector const & lhs, vector const & rhs) {
 			return rhs < lhs;
 		}
 
-		friend bool	operator >= (vector const & lhs, vector const & rhs) {
+		friend	bool	operator >= (vector const & lhs, vector const & rhs) {
 			return !(lhs < rhs);
 		}
 

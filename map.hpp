@@ -3,7 +3,7 @@
 
 # include <memory>
 
-# include "iterator.hpp"
+# include "RBtree.hpp"
 # include "utils.hpp"
 
 namespace	ft
@@ -15,7 +15,7 @@ template	<	class Key,
 				class Compare = less<Key>,
 				class Allocator = std::allocator< pair<Key const, T> >
 			>
-class map
+class	map
 {
 	// Type definitions
 	public:
@@ -31,12 +31,12 @@ class map
 		typedef typename allocator_type::size_type			size_type;
 		typedef typename allocator_type::difference_type	difference_type;
 
-		typedef ft::iterator<pointer>						iterator;
-		typedef ft::iterator<const_pointer>					const_iterator;
+		typedef ft::rb::tree_iterator<value_type>			iterator;
+		typedef ft::rb::const_tree_iterator<value_type>		const_iterator;
 		typedef ft::reverse_iterator<iterator>				reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
 
-		class value_compare : public binary_function<value_type, value_type, bool>
+		class	value_compare : public binary_function<value_type, value_type, bool>
 		{
 			friend class map;
 			protected:
@@ -51,10 +51,7 @@ class map
 
 	// Constructors
 		explicit map (key_compare const & comp = key_compare(),
-					  allocator_type const & alloc= allocator_type())
-		{
-	(void)comp; (void)alloc;
-		}
+					  allocator_type const & alloc= allocator_type())	{ (void)comp; (void)alloc; }
 
 		template < class InputIterator >
 		map (InputIterator first, InputIterator last,
@@ -64,9 +61,7 @@ class map
 
 		map (map const & other);
 
-		~map ()
-		{
-		}
+		~map ()			{ }
 
 		map &	operator = (map const & other);
 

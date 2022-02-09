@@ -6,10 +6,10 @@ namespace ft
 {
 
 template < bool Cond, class T = void >
-struct enable_if				{ };
+struct	enable_if				{ };
 
 template < class T >
-struct enable_if < true, T >	{ typedef T type; };
+struct	enable_if < true, T >	{ typedef T type; };
 
 template < class T >	struct is_integral					{ static const bool value = false; };
 
@@ -84,7 +84,7 @@ bool		equal(InputIterator1 first1, InputIterator1 last1,
 
 
 template < class T1, class T2 >
-struct pair
+struct	pair
 {
 	typedef T1		first_type;
 	typedef T2		second_type;
@@ -97,7 +97,7 @@ struct pair
 	pair (T1 const & a, T2 const & b)	: first(a), second(b)				 { }
 
 	template < class U1, class U2 >
-	pair (pair<U1,U2> const & pr)		: first(pr.first), second(pr.second) { }
+	pair (pair<U1, U2> const & pr)		: first(pr.first), second(pr.second) { }
 
 	pair &	operator = (pair const & other)
 	{
@@ -106,27 +106,27 @@ struct pair
 		return *this;
 	}
 
-	friend bool		operator == (pair const & lhs, pair const & rhs) {
+	friend	bool		operator == (pair const & lhs, pair const & rhs) {
 		return lhs.first == rhs.first && lhs.second == rhs.second;
 	}
 
-	friend bool		operator != (pair const & lhs, pair const & rhs) {
+	friend	bool	operator != (pair const & lhs, pair const & rhs) {
 		return !(lhs == rhs);
 	}
 
-	friend bool		operator < (pair const & lhs, pair const & rhs) {
+	friend	bool		operator < (pair const & lhs, pair const & rhs) {
 		return lhs.first < rhs.first || (!(rhs.first < lhs.first) && lhs.second < rhs.second);
 	}
 
-	friend bool		operator <= (pair const & lhs, pair const & rhs) {
+	friend	bool		operator <= (pair const & lhs, pair const & rhs) {
 		return !(rhs < lhs);
 	}
 
-	friend bool		operator > (pair const & lhs, pair const & rhs) {
+	friend	bool		operator > (pair const & lhs, pair const & rhs) {
 		return rhs < lhs;
 	}
 
-	friend bool		operator >= (pair const & lhs, pair const & rhs) {
+	friend	bool		operator >= (pair const & lhs, pair const & rhs) {
 		return !(lhs < rhs);
 	}
 
@@ -140,7 +140,7 @@ pair<T1,T2>	make_pair(T1 x, T2 y)
 
 
 template <class Arg1, class Arg2, class Result>
-struct binary_function
+struct	binary_function
 {
 	typedef Arg1		first_argument_type;
 	typedef Arg2		second_argument_type;
@@ -148,7 +148,7 @@ struct binary_function
 };
 
 template < class T >
-struct		less : public binary_function<T, T, bool>
+struct	less : public binary_function<T, T, bool>
 {
 	bool	operator() (T const & lhs, T const & rhs) const {
 		return lhs < rhs;
@@ -156,14 +156,14 @@ struct		less : public binary_function<T, T, bool>
 };
 
 
-template < typename T >
-void		swap(T & a, T & b)
-{
-	T	tmp = a;
+// template < typename T >
+// void		swap(T & a, T & b)
+// {
+// 	T	tmp = a;
 
-	a = b;
-	b = tmp;
-}
+// 	a = b;
+// 	b = tmp;
+// }
 
 }
 

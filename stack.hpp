@@ -8,7 +8,7 @@ namespace	ft
 {
 
 template < class T, class Container = ft::vector<T> >
-class stack
+class	stack
 {
 	public:
 		typedef Container								container_type;
@@ -23,7 +23,7 @@ class stack
 	public:
 		explicit stack(const container_type & cont = container_type()) : c(cont) { }
 
-		stack &		operator = (stack const & other) { c = other.c; return *this; }
+		stack &		operator = (stack const & other)  { c = other.c; return *this; }
 
 		~stack() { }
 
@@ -37,12 +37,12 @@ class stack
 		void				pop()							{ c.pop_back(); }
 
 	public:
-		friend bool	operator == (stack const & lhs, stack const & rhs)	{ return lhs.c == rhs.c; }
-		friend bool	operator != (stack const & lhs, stack const & rhs)	{ return lhs.c != rhs.c; }
-		friend bool	operator < (stack const & lhs, stack const & rhs)	{ return lhs.c < rhs.c; }
-		friend bool	operator <= (stack const & lhs, stack const & rhs)	{ return lhs.c <= rhs.c; }
-		friend bool	operator > (stack const & lhs, stack const & rhs)	{ return lhs.c > rhs.c; }
-		friend bool	operator >= (stack const & lhs, stack const & rhs)	{ return lhs.c >= rhs.c; }
+		friend	bool	operator == (stack const & lhs, stack const & rhs)	{ return lhs.c == rhs.c; }
+		friend	bool	operator != (stack const & lhs, stack const & rhs)	{ return lhs.c != rhs.c; }
+		friend	bool	operator < (stack const & lhs, stack const & rhs)	{ return lhs.c < rhs.c; }
+		friend	bool	operator <= (stack const & lhs, stack const & rhs)	{ return lhs.c <= rhs.c; }
+		friend	bool	operator > (stack const & lhs, stack const & rhs)	{ return lhs.c > rhs.c; }
+		friend	bool	operator >= (stack const & lhs, stack const & rhs)	{ return lhs.c >= rhs.c; }
 
 };
 
