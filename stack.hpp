@@ -18,31 +18,31 @@ class stack
 		typedef typename Container::const_reference		const_reference;
 
 	protected:
-		container_type		_c;
+		container_type		c;
 
 	public:
-		explicit stack(const container_type & cont = container_type()) : _c(cont) { }
+		explicit stack(const container_type & cont = container_type()) : c(cont) { }
 
-		stack &		operator = (stack const & other) { _c = other._c; return *this; }
+		stack &		operator = (stack const & other) { c = other.c; return *this; }
 
 		~stack() { }
 
 	public:
-		bool				empty() const					{ return _c.empty(); }
-		size_type			size() const					{ return _c.size(); }
+		bool				empty() const					{ return c.empty(); }
+		size_type			size() const					{ return c.size(); }
 
-		reference			top()							{ return _c.back(); }
-		const_reference		top() const						{ return _c.back(); }
-		void				push(value_type const & value)	{ return _c.push_back(value); }
-		void				pop()							{ _c.pop_back(); }
+		reference			top()							{ return c.back(); }
+		const_reference		top() const						{ return c.back(); }
+		void				push(value_type const & value)	{ return c.push_back(value); }
+		void				pop()							{ c.pop_back(); }
 
 	public:
-		friend bool	operator == (stack const & lhs, stack const & rhs)	{ return lhs._c == rhs._c; }
-		friend bool	operator != (stack const & lhs, stack const & rhs)	{ return lhs._c != rhs._c; }
-		friend bool	operator < (stack const & lhs, stack const & rhs)	{ return lhs._c < rhs._c; }
-		friend bool	operator <= (stack const & lhs, stack const & rhs)	{ return lhs._c <= rhs._c; }
-		friend bool	operator > (stack const & lhs, stack const & rhs)	{ return lhs._c > rhs._c; }
-		friend bool	operator >= (stack const & lhs, stack const & rhs)	{ return lhs._c >= rhs._c; }
+		friend bool	operator == (stack const & lhs, stack const & rhs)	{ return lhs.c == rhs.c; }
+		friend bool	operator != (stack const & lhs, stack const & rhs)	{ return lhs.c != rhs.c; }
+		friend bool	operator < (stack const & lhs, stack const & rhs)	{ return lhs.c < rhs.c; }
+		friend bool	operator <= (stack const & lhs, stack const & rhs)	{ return lhs.c <= rhs.c; }
+		friend bool	operator > (stack const & lhs, stack const & rhs)	{ return lhs.c > rhs.c; }
+		friend bool	operator >= (stack const & lhs, stack const & rhs)	{ return lhs.c >= rhs.c; }
 
 };
 

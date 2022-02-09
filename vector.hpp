@@ -57,17 +57,12 @@ class vector
 		template < class InputIterator >
 		vector	(InputIterator first, InputIterator last,
 				 allocator_type const & alloc = allocator_type(),
-				 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+				 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) :
+			_start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
 		{
-			_alloc = alloc;
-			_start = _alloc.allocate(_get_size(first, last));
-			_end = _start;
 			while (first != last) {
-				_alloc.construct(_end, *first);
-				first++;
-				_end++;
+				push_back(*first++);
 			}
-			_end_cap = _end;
 		}
 
 		vector	(vector const & other)
@@ -140,14 +135,9 @@ class vector
 		void			assign(InputIterator first, InputIterator last,
 						typename ft::enable_if <!ft::is_integral<InputIterator>::value>::type * = 0)
 		{
-			size_type	new_size = _get_size(first, last);
-
 			clear();
-			if (new_size > capacity()) {
-				reserve(new_size);
-			}
 			while (first != last) {
-				_alloc.construct(_end++, *first++);
+				push_back(*first++);
 			}
 		}
 
@@ -202,7 +192,7 @@ class vector
 				else {
 					reserve(new_size); }
 			}
-			_move_forward(_start + index, _end - 1, count);
+			_move_forward(_start + index, _end, count);
 			for (size_type i = index; i < count + index; i++) {
 				_alloc.construct(_start + i, value);
 			}
@@ -213,18 +203,28 @@ class vector
 		void			insert(iterator pos, InputIterator first, InputIterator last,
 						typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
 		{
-			size_type	count = _get_size(first, last);
-			size_type	new_size = count + size();
-			size_type	index = static_cast<size_type>(pos - begin());
+			vector	tmp;
+			while (first != last) {
+				tmp.push_back(*first++);
+			}
+
+			size_type	count = tmp.size();
+			size_type	new_size = count + this->size();
+			size_type	index = static_cast<size_type>(pos - this->begin());
 
 			if (new_size > capacity()) {
 				reserve(new_size);
 			}
-			_move_forward(_start + index, _end - 1, count);
-			for (size_type i = index; i < count + index; i++) {
-				_alloc.construct(_start + i, *first++);
+			_move_forward(_start + index, _end, count);
+			for (size_type i = 0; i < count; i++) {
+				_alloc.construct(_start + index + i, tmp[i]);
 			}
 			_end += count;
+			// while (first != last) {
+			// 	pos = insert(pos, *first);
+			// 	first++;
+			// 	pos++;
+			// }
 		}
 
 		iterator		erase(iterator pos)
@@ -313,20 +313,12 @@ class vector
 
 		void			_move_forward(pointer first, pointer last, size_type offset)
 		{
-			while (first <= last) {
-				_alloc.construct(last + offset, *last);
-				_alloc.destroy(last);
-				last--;
-			}
+			std::rotate(first, last, last + offset);
 		}
 
 		void			_move_backward(pointer first, pointer last, size_type offset)
 		{
-			while (first < last) {
-				_alloc.construct(first - offset, *first);
-				_alloc.destroy(first);
-				first++;
-			}
+			std::rotate(first - offset, first, last);
 		}
 
 	// Non-member overloads
