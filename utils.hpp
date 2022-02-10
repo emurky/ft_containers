@@ -138,32 +138,45 @@ pair<T1,T2>	make_pair(T1 x, T2 y)
 	return (pair<T1,T2>(x, y));
 }
 
+template < class Arg, class Result >
+struct	unary_function
+{
+	typedef Arg		argument_type;
+	typedef Result	result_type;
+};
 
-template <class Arg1, class Arg2, class Result>
+template < class Arg1, class Arg2, class Result >
 struct	binary_function
 {
-	typedef Arg1		first_argument_type;
-	typedef Arg2		second_argument_type;
-	typedef Result		result_type;
+	typedef Arg1	first_argument_type;
+	typedef Arg2	second_argument_type;
+	typedef Result	result_type;
 };
 
 template < class T >
-struct	less : public binary_function<T, T, bool>
+struct	less		: public binary_function<T, T, bool>
 {
-	bool	operator() (T const & lhs, T const & rhs) const {
+	bool	operator () (T const & lhs, T const & rhs) const {
 		return lhs < rhs;
 	}
 };
 
+template < class T >
+struct	identity	: public unary_function<T,T>
+{
+	T &				operator () (T & x) const			{ return x; }
+	T const &		operator () (T const & x) const		{ return x; }
+};
 
-// template < typename T >
-// void		swap(T & a, T & b)
-// {
-// 	T	tmp = a;
+template < class Pair >
+struct	select1st	: public unary_function<Pair,typename Pair::first_type>
+{
+	typedef typename Pair::first_type	first;
 
-// 	a = b;
-// 	b = tmp;
-// }
+	first &			operator () (Pair & x) const		{ return x.first; }
+	first const &	operator () (Pair const & x) const	{ return x.first; }
+};
+
 
 }
 

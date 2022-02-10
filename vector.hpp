@@ -288,6 +288,15 @@ class	vector
 
 	// Private member functions
 	private:
+		void			_deallocate_and_throw(std::exception & e)
+		{
+			if (_start) {
+				clear();
+				_alloc.deallocate(_start, capacity());
+			}
+			throw e;
+		}
+
 		void			_destroy_after_pos(pointer pos)
 		{
 			while (pos != _end)

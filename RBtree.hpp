@@ -1,13 +1,18 @@
 #ifndef FT_RBTREE_HPP
 # define FT_RBTREE_HPP
 
+# include <memory>
+
+# include "utils.hpp"
+
 namespace	ft
 
 {
 
-namespace	rb	//tree
+namespace	rb	// Red-Black tree
 {
 
+// Nodes
 enum	node_color	{ red = false, black = true };
 
 struct	node_base
@@ -136,6 +141,7 @@ struct	node : public	node_base
 	Value				value;
 };
 
+// Iterators
 template < typename T >
 struct	tree_iterator
 {
@@ -241,6 +247,91 @@ struct	const_tree_iterator
 
 	friend	bool	operator == (iter const & lhs, const_iter const & rhs)	{ return lhs.node == rhs.node; }
 	friend	bool	operator != (iter const & lhs, const_iter const & rhs)	{ return lhs.node != rhs.node; }
+};
+
+// RBTree class itself
+template <	typename Key, typename Value, typename KeyOfValue, typename Compare,
+			typename Alloc = std::allocator<Value>	>
+class	RedBlackTree
+{
+	typedef typename Alloc::template rebind< node<Value> >::other	node_allocator;
+
+	public:
+		typedef Key							key_type;
+		typedef Value						value_type;
+		typedef value_type *				pointer;
+		typedef value_type const *			const_pointer;
+		typedef value_type &				reference;
+		typedef value_type const &			const_reference;
+		typedef node<Value> *				link_type;
+		typedef node<Value> const *			const_link_type;
+		typedef size_t						size_type;
+		typedef ptrdiff_t					difference_type;
+		typedef Alloc						allocator_type;
+
+	protected:
+		typedef node_base::pointer			base_pointer;
+		typedef node_base::const_pointer	const_base_pointer;
+		typedef node<Value>					node;
+
+		template < typename KeyCompare >
+		struct	tree		: public node_allocator
+		{
+			KeyCompare		key_compare;
+			node_base		header;
+			size_type		node_count;
+
+			tree(node_allocator const & alloc = node_allocator(),
+				 KeyCompare const & comp = KeyCompare()) :
+			node_allocator(alloc), key_compare(comp), node_count(0)
+			{
+				header.color = red;
+				header.parent = NULL;
+				header.left = &header;
+				header.right = &header;
+			}
+		};
+
+	public:
+		allocator_type		get_allocator() const {
+			return *static_cast<node_allocator const *>(&_tree);
+		}
+
+	protected:
+		tree<Compare>		_tree;
+
+		node *		get_node()
+		{
+			return _tree.node_allocator::allocate(1);
+		}
+
+		void		put_node(node * p)
+		{
+			_tree.node_allocator::deallocate(p, 1);
+		}
+
+		link_type	create_node(value_type const & n)
+		{
+			link_type	tmp = get_node();
+			get_allocator().construct(&tmp->value, n);
+			return tmp;
+		}
+
+		link_type	clone_node(const_link_type n)
+		{
+			link_type	tmp = create_node(n->value);
+			tmp->color = n->color;
+			tmp->left = NULL;
+			tmp->right = NULL;
+			return tmp;
+		}
+
+		void		destroy_node(link_type p)
+		{
+			get_allocator().destroy(&p->value);
+			put_node(p);
+		}
+
 };
 
 }
