@@ -109,23 +109,18 @@ struct	pair
 	friend	bool		operator == (pair const & lhs, pair const & rhs) {
 		return lhs.first == rhs.first && lhs.second == rhs.second;
 	}
-
-	friend	bool	operator != (pair const & lhs, pair const & rhs) {
+	friend	bool		operator != (pair const & lhs, pair const & rhs) {
 		return !(lhs == rhs);
 	}
-
 	friend	bool		operator < (pair const & lhs, pair const & rhs) {
 		return lhs.first < rhs.first || (!(rhs.first < lhs.first) && lhs.second < rhs.second);
 	}
-
 	friend	bool		operator <= (pair const & lhs, pair const & rhs) {
 		return !(rhs < lhs);
 	}
-
 	friend	bool		operator > (pair const & lhs, pair const & rhs) {
 		return rhs < lhs;
 	}
-
 	friend	bool		operator >= (pair const & lhs, pair const & rhs) {
 		return !(lhs < rhs);
 	}
@@ -156,7 +151,7 @@ struct	binary_function
 template < class T >
 struct	less		: public binary_function<T, T, bool>
 {
-	bool	operator () (T const & lhs, T const & rhs) const {
+	bool			operator () (T const & lhs, T const & rhs) const {
 		return lhs < rhs;
 	}
 };

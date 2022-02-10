@@ -317,23 +317,18 @@ class	vector
 		friend	bool	operator == (vector const & lhs, vector const & rhs) {
 			return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 		}
-
 		friend	bool	operator != (vector const & lhs, vector const & rhs) {
 			return !(lhs == rhs);
 		}
-
 		friend	bool	operator < (vector const & lhs, vector const & rhs) {
 			return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 		}
-
 		friend	bool	operator <= (vector const & lhs, vector const & rhs) {
 			return	!(rhs < lhs);
 		}
-
 		friend	bool	operator > (vector const & lhs, vector const & rhs) {
 			return rhs < lhs;
 		}
-
 		friend	bool	operator >= (vector const & lhs, vector const & rhs) {
 			return !(lhs < rhs);
 		}

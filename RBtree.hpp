@@ -269,6 +269,11 @@ class	RedBlackTree
 		typedef ptrdiff_t					difference_type;
 		typedef Alloc						allocator_type;
 
+		typedef tree_iterator<value_type>				iterator;
+		typedef const_tree_iterator<value_type>			const_iterator;
+		typedef ft::reverse_iterator<iterator>			reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+
 	protected:
 		typedef node_base::pointer			base_pointer;
 		typedef node_base::const_pointer	const_base_pointer;
@@ -332,6 +337,62 @@ class	RedBlackTree
 			put_node(p);
 		}
 
+	protected:
+		base_pointer &				root()				{ return _tree.header.parent; }
+		const_base_pointer			root() const		{ return _tree.header.parent; }
+		base_pointer &				leftmost()			{ return _tree.header.left; }
+		const_base_pointer			leftmost() const	{ return _tree.header.left; }
+		base_pointer &				rightmost()			{ return _tree.header.right; }
+		const_base_pointer			rightmost() const	{ return _tree.header.right; }
+
+		link_type					begin() {
+			return static_cast<link_type>(_tree.header.parent);
+		}
+		const_link_type				begin() const {
+			return static_cast<const_link_type>(_tree.header.parent);
+		}
+		link_type					end() {
+			return static_cast<link_type>(&_tree.header);
+		}
+		const_link_type				end() const {
+			return static_cast<const_link_type>(&_tree.header);
+		}
+		static link_type			left(base_pointer n) {
+			return static_cast<link_type>(n->left);
+		}
+		static const_link_type		left(const_base_pointer n) {
+			return static_cast<const_link_type>(n->left);
+		}
+		static link_type			right(base_pointer n) {
+			return static_cast<link_type>(n->right);
+		}
+		static const_link_type		right(const_base_pointer n) {
+			return static_cast<const_link_type>(n->right);
+		}
+		static const_reference		value(const_link_type n) {
+			return n->value;
+		}
+		static const_reference		value(const_base_pointer n) {
+			return static_cast<const_link_type>(n)->value;
+		}
+		static Key const &			key(const_link_type n) {
+			return KeyOfValue()(value(n));
+		}
+		static Key const &			key(const_base_pointer n) {
+			return KeyOfValue()(value(n));
+		}
+		static base_pointer			min(base_pointer n) {
+			return node_base::min(n);
+		}
+		static const_base_pointer	min(const_base_pointer n) {
+			return node_base::min(n);
+		}
+		static base_pointer			max(base_pointer n) {
+			return node_base::max(n);
+		}
+		static const_base_pointer	max(const_base_pointer n) {
+			return node_base::max(n);
+		}
 };
 
 }
