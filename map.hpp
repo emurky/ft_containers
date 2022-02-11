@@ -65,7 +65,7 @@ class	map
 
 		map &	operator = (map const & other);
 
-	// Iterators:
+	// Iterators
 		iterator				begin();
 		const_iterator			begin() const;
 		iterator				end();
@@ -76,17 +76,17 @@ class	map
 		reverse_iterator		rend();
 		const_reverse_iterator	rend() const;
 
-	// Capacity:
+	// Capacity
 		bool				empty() const;
 		size_type			size() const;
 		size_type			max_size() const;
 
-	// Element access:
+	// Element access
 		mapped_type &		operator [] (key_type const & key);
 		mapped_type &		at(key_type const & key);
 		mapped_type const &	at(key_type const & key) const;
 
-	// Modifiers:
+	// Modifiers
 		pair<iterator,bool>	insert(value_type const & value);
 
 		iterator			insert(iterator pos, value_type const & value);
@@ -103,15 +103,14 @@ class	map
 
 		void				swap(map & m);
 
-	// Observers:
+	// Observers
 		allocator_type		get_allocator() const;
 		key_compare			key_comp() const;
 		value_compare		value_comp() const;
 
-	// Operations:
+	// Operations
 		iterator			find(key_type const & key);
 		const_iterator		find(key_type const & key) const;
-
 
 		size_type			count(key_type const & key) const;
 

@@ -258,6 +258,7 @@ class	RedBlackTree
 {
 	typedef typename Alloc::template rebind< node<Value> >::other	node_allocator;
 
+	// Type definitions
 	public:
 		typedef Key							key_type;
 		typedef Value						value_type;
@@ -299,47 +300,11 @@ class	RedBlackTree
 			}
 		};
 
-	public:
-		allocator_type	get_allocator() const
-		{
-			return *static_cast<node_allocator const *>(&_tree);
-		}
-
+	// Protected member
 	protected:
 		tree<Compare>	_tree;
 
-		node *			_get_node()
-		{
-			return _tree.node_allocator::allocate(1);
-		}
-
-		void			_put_node(node * p)
-		{
-			_tree.node_allocator::deallocate(p, 1);
-		}
-
-		link_type		_create_node(value_type const & n)
-		{
-			link_type	tmp = _get_node();
-			get_allocator().construct(&tmp->value, n);
-			return tmp;
-		}
-
-		link_type		_clone_node(const_link_type n)
-		{
-			link_type	tmp = _create_node(n->value);
-			tmp->color = n->color;
-			tmp->left = NULL;
-			tmp->right = NULL;
-			return tmp;
-		}
-
-		void			_destroy_node(link_type p)
-		{
-			get_allocator().destroy(&p->value);
-			_put_node(p);
-		}
-
+	// Constructors
 	public:
 		RedBlackTree()								{ }
 
@@ -381,10 +346,7 @@ class	RedBlackTree
 		}
 
 	public:
-		Compare						key_comp() const {
-			return _tree.key_compare;
-		}
-
+	// Iterators
 		iterator					begin() {
 			return static_cast<link_type>(_tree.header.left);
 		}
@@ -410,11 +372,12 @@ class	RedBlackTree
 		const_reverse_iterator		rend() const {
 			return const_reverse_iterator(begin());
 		}
-
+	// Capacity
 		bool			empty() const		{ return _tree.node_count == 0; }
 		size_type		size() const		{ return _tree.node_count; }
 		size_type		max_size() const	{ return get_allocator().max_size(); }
 
+	// Modifiers
 		void			clear()
 		{
 			_erase(_begin());
@@ -422,6 +385,49 @@ class	RedBlackTree
 			_root() = NULL;
 			_rightmost() = _end();
 			_tree.node_count = 0;
+		}
+
+	// Observers:
+		allocator_type	get_allocator() const
+		{
+			return *static_cast<node_allocator const *>(&_tree);
+		}
+
+		Compare			key_comp() const	{ return _tree.key_compare; }
+
+	// Operations
+
+	protected:
+		node *			_get_node()
+		{
+			return _tree.node_allocator::allocate(1);
+		}
+
+		void			_put_node(node * p)
+		{
+			_tree.node_allocator::deallocate(p, 1);
+		}
+
+		link_type		_create_node(value_type const & n)
+		{
+			link_type	tmp = _get_node();
+			get_allocator().construct(&tmp->value, n);
+			return tmp;
+		}
+
+		link_type		_clone_node(const_link_type n)
+		{
+			link_type	tmp = _create_node(n->value);
+			tmp->color = n->color;
+			tmp->left = NULL;
+			tmp->right = NULL;
+			return tmp;
+		}
+
+		void			_destroy_node(link_type p)
+		{
+			get_allocator().destroy(&p->value);
+			_put_node(p);
 		}
 
 	protected:
