@@ -37,8 +37,8 @@ class	vector
 
 	// Constructors
 	public:
-		explicit vector	(allocator_type const & alloc = allocator_type()) :
-			_start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
+		explicit vector	(allocator_type const & alloc = allocator_type())
+			: _start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
 		{
 		}
 
@@ -57,8 +57,8 @@ class	vector
 		template < class InputIterator >
 		vector	(InputIterator first, InputIterator last,
 				 allocator_type const & alloc = allocator_type(),
-				 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) :
-			_start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
+				 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+			: _start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
 		{
 			while (first != last) {
 				push_back(*first++);

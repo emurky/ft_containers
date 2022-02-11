@@ -25,7 +25,9 @@ struct	node_base
 	pointer		left;
 	pointer		right;
 
-	static pointer			grandparent(pointer n)
+	pointer		n;
+
+	pointer					grandparent()
 	{
 		if (n && n->parent)
 			return n->parent->parent;
@@ -33,9 +35,9 @@ struct	node_base
 			return NULL;
 	}
 
-	static pointer			uncle(pointer n)
+	pointer					uncle()
 	{
-		pointer	g = grandparent(n);
+		pointer	g = n->grandparent();
 		if (!g)
 			return NULL;
 		if (n->parent == g->left)
@@ -44,7 +46,7 @@ struct	node_base
 			return g->left;
 	}
 
-	static pointer			sibling(pointer n)
+	pointer					sibling()
 	{
 		if (n == n->parent->left)
 			return n->parent->right;
@@ -107,7 +109,7 @@ struct	node_base
 
 	static pointer			decrement(pointer n)
 	{
-		if (n->color == red && n->grandparent(n) == n) {
+		if (n->color == red && n->grandparent() == n) {
 			n = n->right;
 		}
 		else if (n->left) {
@@ -249,7 +251,7 @@ struct	const_tree_iterator
 	friend	bool	operator != (iter const & lhs, const_iter const & rhs)	{ return lhs.node != rhs.node; }
 };
 
-// RBTree class itself
+// RBtree class itself
 template <	typename Key, typename Value, typename KeyOfValue, typename Compare,
 			typename Alloc = std::allocator<Value>	>
 class	RedBlackTree
@@ -305,93 +307,353 @@ class	RedBlackTree
 	protected:
 		tree<Compare>		_tree;
 
-		node *		get_node()
+		node *		_get_node()
 		{
 			return _tree.node_allocator::allocate(1);
 		}
 
-		void		put_node(node * p)
+		void		_put_node(node * p)
 		{
 			_tree.node_allocator::deallocate(p, 1);
 		}
 
-		link_type	create_node(value_type const & n)
+		link_type	_create_node(value_type const & n)
 		{
-			link_type	tmp = get_node();
+			link_type	tmp = _get_node();
 			get_allocator().construct(&tmp->value, n);
 			return tmp;
 		}
 
-		link_type	clone_node(const_link_type n)
+		link_type	_clone_node(const_link_type n)
 		{
-			link_type	tmp = create_node(n->value);
+			link_type	tmp = _create_node(n->value);
 			tmp->color = n->color;
 			tmp->left = NULL;
 			tmp->right = NULL;
 			return tmp;
 		}
 
-		void		destroy_node(link_type p)
+		void		_destroy_node(link_type p)
 		{
 			get_allocator().destroy(&p->value);
-			put_node(p);
+			_put_node(p);
+		}
+
+	public:
+		RedBlackTree()								{ }
+
+		RedBlackTree(Compare const & comp)
+			: _tree(allocator_type(), comp)			{ }
+
+		RedBlackTree(Compare const & comp, allocator_type const & alloc)
+			: _tree(alloc, comp)					{ }
+
+		RedBlackTree(RedBlackTree const & other)  // erase template??
+			: _tree(other.get_allocator(), other._tree.key_compare)
+		{
+			if (other._root()) {
+				_root() = _copy(other._begin(), _end());
+				_leftmost() = _min(_root());
+				_rightmost() = _max(_root());
+				_tree.node_count = other._tree.node_count;
+			}
+		}
+
+		~RedBlackTree()
+		{
+			_erase(_begin());
+		}
+
+		RedBlackTree &		operator = (RedBlackTree const & rhs)
+		{
+			if (this != &rhs) {
+				clear();
+				_tree.key_compare = rhs._tree.key_compare;
+				if (rhs._root()) {
+					_root() = _copy(rhs._begin(), _end());
+					_leftmost() = _min(_root());
+					_rightmost() = _max(_root());
+					_tree.node_count = rhs._tree.node_count;
+				}
+			}
+			return *this;
+		}
+
+	public:
+		Compare						key_comp() const {
+			return _tree.key_compare;
+		}
+
+		iterator					begin() {
+			return static_cast<link_type>(_tree.header.left);
+		}
+		const_iterator				begin() const {
+			return static_cast<const_link_type>(_tree.header.left);
+		}
+		iterator					end() {
+			return static_cast<link_type>(&_tree.header);
+		}
+		const_iterator				end() const {
+			return static_cast<const_link_type>(&_tree.header);
+		}
+
+		reverse_iterator			rbegin() {
+			return reverse_iterator(end());
+		}
+		const_reverse_iterator		rbegin() const {
+			return const_reverse_iterator(end());
+		}
+		reverse_iterator			rend() {
+			return reverse_iterator(begin());
+		}
+		const_reverse_iterator		rend() const {
+			return const_reverse_iterator(begin());
+		}
+
+		bool		empty() const		{ return _tree.node_count == 0; }
+		size_type	size() const		{ return _tree.node_count; }
+		size_type	max_size() const	{ return get_allocator().max_size(); }
+
+		void		clear()
+		{
+			_erase(_begin());
+			_leftmost() = _end();
+			_root() = NULL;
+			_rightmost() = _end();
+			_tree.node_count = 0;
 		}
 
 	protected:
-		base_pointer &				root()				{ return _tree.header.parent; }
-		const_base_pointer			root() const		{ return _tree.header.parent; }
-		base_pointer &				leftmost()			{ return _tree.header.left; }
-		const_base_pointer			leftmost() const	{ return _tree.header.left; }
-		base_pointer &				rightmost()			{ return _tree.header.right; }
-		const_base_pointer			rightmost() const	{ return _tree.header.right; }
+		base_pointer &				_root()				{ return _tree.header.parent; }
+		const_base_pointer			_root() const		{ return _tree.header.parent; }
+		base_pointer &				_leftmost()			{ return _tree.header.left; }
+		const_base_pointer			_leftmost() const	{ return _tree.header.left; }
+		base_pointer &				_rightmost()		{ return _tree.header.right; }
+		const_base_pointer			_rightmost() const	{ return _tree.header.right; }
 
-		link_type					begin() {
+		link_type					_begin() {
 			return static_cast<link_type>(_tree.header.parent);
 		}
-		const_link_type				begin() const {
+		const_link_type				_begin() const {
 			return static_cast<const_link_type>(_tree.header.parent);
 		}
-		link_type					end() {
+		link_type					_end() {
 			return static_cast<link_type>(&_tree.header);
 		}
-		const_link_type				end() const {
+		const_link_type				_end() const {
 			return static_cast<const_link_type>(&_tree.header);
 		}
-		static link_type			left(base_pointer n) {
+		static link_type			_left(base_pointer n) {
 			return static_cast<link_type>(n->left);
 		}
-		static const_link_type		left(const_base_pointer n) {
+		static const_link_type		_left(const_base_pointer n) {
 			return static_cast<const_link_type>(n->left);
 		}
-		static link_type			right(base_pointer n) {
+		static link_type			_right(base_pointer n) {
 			return static_cast<link_type>(n->right);
 		}
-		static const_link_type		right(const_base_pointer n) {
+		static const_link_type		_right(const_base_pointer n) {
 			return static_cast<const_link_type>(n->right);
 		}
-		static const_reference		value(const_link_type n) {
+		static const_reference		_value(const_link_type n) {
 			return n->value;
 		}
-		static const_reference		value(const_base_pointer n) {
+		static const_reference		_value(const_base_pointer n) {
 			return static_cast<const_link_type>(n)->value;
 		}
-		static Key const &			key(const_link_type n) {
-			return KeyOfValue()(value(n));
+		static Key const &			_key(const_link_type n) {
+			return KeyOfValue()(_value(n));
 		}
-		static Key const &			key(const_base_pointer n) {
-			return KeyOfValue()(value(n));
+		static Key const &			_key(const_base_pointer n) {
+			return KeyOfValue()(_value(n));
 		}
-		static base_pointer			min(base_pointer n) {
+		static base_pointer			_min(base_pointer n) {
 			return node_base::min(n);
 		}
-		static const_base_pointer	min(const_base_pointer n) {
+		static const_base_pointer	_min(const_base_pointer n) {
 			return node_base::min(n);
 		}
-		static base_pointer			max(base_pointer n) {
+		static base_pointer			_max(base_pointer n) {
 			return node_base::max(n);
 		}
-		static const_base_pointer	max(const_base_pointer n) {
+		static const_base_pointer	_max(const_base_pointer n) {
 			return node_base::max(n);
+		}
+
+	private:
+		size_type		_count(const_base_pointer node)
+		{
+			size_type	sum = 0;
+
+			if (!node) {
+				return 0;
+			}
+			do {
+				if (node->color == black) {
+					sum++; }
+				if (node == _root()) {
+					break; }
+				node = node->parent;
+			}	while (true);
+			return sum;
+		}
+
+		void			_rotate_left(base_pointer const node)
+		{
+			base_pointer const	pivot = node->right;
+			base_pointer &		root = _root();
+
+			node->right = pivot->left;
+			if (pivot->left) {
+				pivot->left->parent = node;
+			}
+			pivot->parent = node->parent;
+
+			if (node == root) {
+				root = pivot;										//   can i use _root()?
+			}
+			else if (node == node->parent->left) {
+				node->parent->left = pivot;
+			}
+			else {
+				node->parent->right = pivot;
+			}
+			pivot->left = node;
+			node->parent = pivot;
+		}
+
+		void			_rotate_right(base_pointer const node)
+		{
+			base_pointer const	pivot = node->left;
+			base_pointer &		root = _root();
+
+			node->left = pivot->right;
+			if (pivot->right) {
+				pivot->right->parent = node;
+			}
+			pivot->parent = node->parent;
+
+			if (node == root) {
+				root = pivot;
+			}
+			else if (node == node->parent->right) {
+				node->parent->right = pivot;
+			}
+			else {
+				node->parent->left = pivot;
+			}
+			pivot->right = node;
+			node->parent = pivot;
+		}
+
+		void			_rebalance_after_insert(base_pointer node)		// base_pointer parent)
+		{
+			base_pointer &	root = _tree.header.parent;
+
+			while (node != root && node->parent->color == red) {
+				base_pointer const		grandpa = node->grandparent();
+				base_pointer const		uncle = node->uncle();				// using my own relatives
+				if (node->parent == grandpa->left) {
+					if (uncle && uncle->color == red) {
+						node->parent->color = black;
+						uncle->color = black;
+						grandpa->color = red;
+						node = grandpa;
+					}
+					else {
+						if (node == node->sibling()) {					// ?
+							node = node->parent;
+							_rotate_left(node);
+						}
+						node->parent->color = black;
+						grandpa->color = red;
+						_rotate_right(grandpa);
+					}
+				}
+				else {
+					if (uncle && uncle->color == red) {
+						node->parent->color = black;
+						uncle->color = black;
+						grandpa->color = red;
+						node = grandpa;
+					}
+					else {
+						if (node == node->sibling()) {					// ?
+							node = node->parent;
+							_rotate_right(node);
+						}
+						node->parent->color = red;
+						_rotate_left(grandpa);
+					}
+				}
+			}
+			root->color = black;
+		}
+
+		iterator		_insert(base_pointer n, base_pointer parent, value_type const & v)
+		{
+			bool		insert_left = (n || parent == _end() ||
+									  _tree.key_compare(KeyOfValue()(v), _key(parent)));
+			link_type	new_node = _create_node(v);
+
+			new_node->parent = parent;
+			new_node->left = NULL;
+			new_node->right = NULL;
+			new_node->color = red;
+
+			if (insert_left) {
+				parent->left = new_node;
+				if (parent == &_tree.header) {
+					_tree.header.parent = new_node;
+					_tree.header.right = new_node;
+				}
+				else if (parent == _tree.header.left) {
+					_tree.header.left = new_node;
+				}
+			}
+			else {
+				parent->right = new_node;
+				if (parent == _tree.header.right) {
+					_tree.header.right = new_node;
+				}
+			}
+
+			_rebalance_after_insert(new_node, parent);							// divided in two functions
+			_tree.node_count++;
+			return iterator(new_node);
+		}
+
+		link_type		_copy(const_link_type n, link_type p)
+		{
+			link_type	top = _clone_node(n);
+
+			top->parent = p;
+			if (n->right) {
+				top->right = _copy(_right(n), top);
+			}
+			p = top;
+			n = _left(n);
+			while (n) {
+				link_type	m = _clone_node(n);
+				p->left = m;
+				m->parent = p;
+				if (n->right) {
+					m->right = _copy(_right(n), m);
+				}
+				p = m;
+				n = _left(n);
+			}
+			return top;
+		}
+
+		void			_erase(link_type n)
+		{
+			while (n) {
+				_erase(_right(n));
+				link_type	m = _left(n);
+				_destroy_node(n);
+				n = m;
+			}
 		}
 };
 
