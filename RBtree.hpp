@@ -300,31 +300,32 @@ class	RedBlackTree
 		};
 
 	public:
-		allocator_type		get_allocator() const {
+		allocator_type	get_allocator() const
+		{
 			return *static_cast<node_allocator const *>(&_tree);
 		}
 
 	protected:
-		tree<Compare>		_tree;
+		tree<Compare>	_tree;
 
-		node *		_get_node()
+		node *			_get_node()
 		{
 			return _tree.node_allocator::allocate(1);
 		}
 
-		void		_put_node(node * p)
+		void			_put_node(node * p)
 		{
 			_tree.node_allocator::deallocate(p, 1);
 		}
 
-		link_type	_create_node(value_type const & n)
+		link_type		_create_node(value_type const & n)
 		{
 			link_type	tmp = _get_node();
 			get_allocator().construct(&tmp->value, n);
 			return tmp;
 		}
 
-		link_type	_clone_node(const_link_type n)
+		link_type		_clone_node(const_link_type n)
 		{
 			link_type	tmp = _create_node(n->value);
 			tmp->color = n->color;
@@ -333,7 +334,7 @@ class	RedBlackTree
 			return tmp;
 		}
 
-		void		_destroy_node(link_type p)
+		void			_destroy_node(link_type p)
 		{
 			get_allocator().destroy(&p->value);
 			_put_node(p);
@@ -364,7 +365,7 @@ class	RedBlackTree
 			_erase(_begin());
 		}
 
-		RedBlackTree &		operator = (RedBlackTree const & rhs)
+		RedBlackTree &	operator = (RedBlackTree const & rhs)
 		{
 			if (this != &rhs) {
 				clear();
@@ -410,11 +411,11 @@ class	RedBlackTree
 			return const_reverse_iterator(begin());
 		}
 
-		bool		empty() const		{ return _tree.node_count == 0; }
-		size_type	size() const		{ return _tree.node_count; }
-		size_type	max_size() const	{ return get_allocator().max_size(); }
+		bool			empty() const		{ return _tree.node_count == 0; }
+		size_type		size() const		{ return _tree.node_count; }
+		size_type		max_size() const	{ return get_allocator().max_size(); }
 
-		void		clear()
+		void			clear()
 		{
 			_erase(_begin());
 			_leftmost() = _end();
@@ -498,98 +499,6 @@ class	RedBlackTree
 			return sum;
 		}
 
-		void			_rotate_left(base_pointer const node)
-		{
-			base_pointer const	pivot = node->right;
-			base_pointer &		root = _root();
-
-			node->right = pivot->left;
-			if (pivot->left) {
-				pivot->left->parent = node;
-			}
-			pivot->parent = node->parent;
-
-			if (node == root) {
-				root = pivot;										//   can i use _root()?
-			}
-			else if (node == node->parent->left) {
-				node->parent->left = pivot;
-			}
-			else {
-				node->parent->right = pivot;
-			}
-			pivot->left = node;
-			node->parent = pivot;
-		}
-
-		void			_rotate_right(base_pointer const node)
-		{
-			base_pointer const	pivot = node->left;
-			base_pointer &		root = _root();
-
-			node->left = pivot->right;
-			if (pivot->right) {
-				pivot->right->parent = node;
-			}
-			pivot->parent = node->parent;
-
-			if (node == root) {
-				root = pivot;
-			}
-			else if (node == node->parent->right) {
-				node->parent->right = pivot;
-			}
-			else {
-				node->parent->left = pivot;
-			}
-			pivot->right = node;
-			node->parent = pivot;
-		}
-
-		void			_rebalance_after_insert(base_pointer node)		// base_pointer parent)
-		{
-			base_pointer &	root = _tree.header.parent;
-
-			while (node != root && node->parent->color == red) {
-				base_pointer const		grandpa = node->grandparent();
-				base_pointer const		uncle = node->uncle();				// using my own relatives
-				if (node->parent == grandpa->left) {
-					if (uncle && uncle->color == red) {
-						node->parent->color = black;
-						uncle->color = black;
-						grandpa->color = red;
-						node = grandpa;
-					}
-					else {
-						if (node == node->sibling()) {					// ?
-							node = node->parent;
-							_rotate_left(node);
-						}
-						node->parent->color = black;
-						grandpa->color = red;
-						_rotate_right(grandpa);
-					}
-				}
-				else {
-					if (uncle && uncle->color == red) {
-						node->parent->color = black;
-						uncle->color = black;
-						grandpa->color = red;
-						node = grandpa;
-					}
-					else {
-						if (node == node->sibling()) {					// ?
-							node = node->parent;
-							_rotate_right(node);
-						}
-						node->parent->color = red;
-						_rotate_left(grandpa);
-					}
-				}
-			}
-			root->color = black;
-		}
-
 		iterator		_insert(base_pointer n, base_pointer parent, value_type const & v)
 		{
 			bool		insert_left = (n || parent == _end() ||
@@ -655,6 +564,99 @@ class	RedBlackTree
 				n = m;
 			}
 		}
+
+		void			_rebalance_after_insert(base_pointer node)		// base_pointer parent)
+		{
+			base_pointer &	root = _tree.header.parent;
+
+			while (node != root && node->parent->color == red) {
+				base_pointer const		grandpa = node->grandparent();
+				base_pointer const		uncle = node->uncle();				// using my own relatives
+				if (node->parent == grandpa->left) {
+					if (uncle && uncle->color == red) {
+						node->parent->color = black;
+						uncle->color = black;
+						grandpa->color = red;
+						node = grandpa;
+					}
+					else {
+						if (node == node->sibling()) {					// ?
+							node = node->parent;
+							_rotate_left(node);
+						}
+						node->parent->color = black;
+						grandpa->color = red;
+						_rotate_right(grandpa);
+					}
+				}
+				else {
+					if (uncle && uncle->color == red) {
+						node->parent->color = black;
+						uncle->color = black;
+						grandpa->color = red;
+						node = grandpa;
+					}
+					else {
+						if (node == node->sibling()) {					// ?
+							node = node->parent;
+							_rotate_right(node);
+						}
+						node->parent->color = red;
+						_rotate_left(grandpa);
+					}
+				}
+			}
+			root->color = black;
+		}
+
+		void			_rotate_left(base_pointer const node)
+		{
+			base_pointer const	pivot = node->right;
+			base_pointer &		root = _root();
+
+			node->right = pivot->left;
+			if (pivot->left) {
+				pivot->left->parent = node;
+			}
+			pivot->parent = node->parent;
+
+			if (node == root) {
+				root = pivot;										//   can i use _root()?
+			}
+			else if (node == node->parent->left) {
+				node->parent->left = pivot;
+			}
+			else {
+				node->parent->right = pivot;
+			}
+			pivot->left = node;
+			node->parent = pivot;
+		}
+
+		void			_rotate_right(base_pointer const node)
+		{
+			base_pointer const	pivot = node->left;
+			base_pointer &		root = _root();
+
+			node->left = pivot->right;
+			if (pivot->right) {
+				pivot->right->parent = node;
+			}
+			pivot->parent = node->parent;
+
+			if (node == root) {
+				root = pivot;
+			}
+			else if (node == node->parent->right) {
+				node->parent->right = pivot;
+			}
+			else {
+				node->parent->left = pivot;
+			}
+			pivot->right = node;
+			node->parent = pivot;
+		}
+
 };
 
 }
