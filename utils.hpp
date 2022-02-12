@@ -172,6 +172,16 @@ struct	select1st	: public unary_function<Pair,typename Pair::first_type>
 	first const &	operator () (Pair const & x) const	{ return x.first; }
 };
 
+template < class Iterator >
+size_t	distance(Iterator first, Iterator last)
+{
+	size_t	dist = 0;
+
+	for (; first != last; first++) {
+		dist++;
+	}
+	return dist;
+}
 
 }
 

@@ -10,8 +10,9 @@ RM 					= rm -f
 CXXFLAGS			= -Wall -Wextra -Werror -std=c++98 #-g -fsanitize=address
 CPPFLAGS			= -MMD -I.
 
-FT					= -D SWITCH=0
-STD					= -D SWITCH=1
+FT					= -D SWITCH=1
+STD					= -D SWITCH=0
+SEED				= 21
 
 BOLDMAGENTA			= \033[1m\033[35m
 BOLDRED				= \033[1m\033[31m
@@ -24,16 +25,16 @@ ft:
 					@printf "$(BOLDMAGENTA)Compiling FT_Containers$(RESET)"
 					@make CPPFLAGS="$(CPPFLAGS) $(FT)" all
 					@printf "\n"
-					./$(NAME)
-					@./$(NAME) > ft.txt
+					./$(NAME) $(SEED)
+					@(time ./$(NAME) $(SEED)) &> ft.txt; echo ft >> ft.txt
 
 std:
 					@make fclean -s
 					@printf "$(BOLDMAGENTA)Compiling STD_Containers$(RESET)"
 					@make CPPFLAGS="$(CPPFLAGS) $(STD)" all
 					@printf "\n"
-					./$(NAME)
-					@./$(NAME) > std.txt
+					./$(NAME) $(SEED)
+					@(time ./$(NAME) $(SEED)) &> std.txt; echo std >> std.txt
 
 leaks:				ft
 					leaks --atExit -- ./$(NAME)

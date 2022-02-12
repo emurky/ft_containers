@@ -2,6 +2,7 @@
 # define FT_RBTREE_HPP
 
 # include <memory>
+# include <iterator>
 
 # include "iterator.hpp"
 # include "utils.hpp"
@@ -181,7 +182,7 @@ struct	const_tree_iterator
 	typedef tree_iterator<T>			iter;
 	typedef const_tree_iterator<T>		const_iter;
 	typedef node_base::const_pointer	base_pointer;
-	typedef node<T> *					link_type;
+	typedef node<T> const *					link_type;
 
 	base_pointer						node;
 
@@ -233,6 +234,11 @@ class	RedBlackTree
 	typedef typename Alloc::template rebind< node<Value> >::other	node_allocator;
 
 	// Type definitions
+	protected:
+		typedef node_base::pointer			base_pointer;
+		typedef node_base::const_pointer	const_base_pointer;
+		typedef node<Value>					node_type;
+
 	public:
 		typedef Key							key_type;
 		typedef Value						value_type;
@@ -240,8 +246,8 @@ class	RedBlackTree
 		typedef value_type const *			const_pointer;
 		typedef value_type &				reference;
 		typedef value_type const &			const_reference;
-		typedef node<Value> *				link_type;
-		typedef node<Value> const *			const_link_type;
+		typedef node_type *					link_type;
+		typedef node_type const *			const_link_type;
 		typedef size_t						size_type;
 		typedef ptrdiff_t					difference_type;
 		typedef Alloc						allocator_type;
@@ -250,11 +256,6 @@ class	RedBlackTree
 		typedef const_tree_iterator<value_type>			const_iterator;
 		typedef ft::reverse_iterator<iterator>			reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
-
-	protected:
-		typedef node_base::pointer			base_pointer;
-		typedef node_base::const_pointer	const_base_pointer;
-		typedef node<Value>					node;
 
 		template < typename KeyCompare >
 		struct	tree		: public node_allocator
@@ -437,7 +438,7 @@ class	RedBlackTree
 		size_type		erase(key_type const & key)
 		{
 			pair<iterator, iterator>	p = equal_range(key);
-			size_type					count = std::distance(p.first, p.second);
+			size_type					count = ft::distance(p.first, p.second);
 			erase(p.first, p.second);
 			return count;
 		}
@@ -537,7 +538,7 @@ class	RedBlackTree
 		size_type		count(key_type const & key) const
 		{
 			pair<const_iterator, const_iterator>	p = equal_range(key);
-			size_type const	count = std::distance(p.first, p.second);
+			size_type const	count = ft::distance(p.first, p.second);
 			return count;
 		}
 
@@ -581,7 +582,7 @@ class	RedBlackTree
 			link_type	last = _end();
 
 			while (current) {
-				if (!_tree.key_compare(key, _key(current))) {
+				if (_tree.key_compare(key, _key(current))) {
 					last = current;
 					current = _left(current);
 				}
@@ -598,7 +599,7 @@ class	RedBlackTree
 			const_link_type		last = _end();
 
 			while (current) {
-				if (!_tree.key_compare(key, _key(current))) {
+				if (_tree.key_compare(key, _key(current))) {
 					last = current;
 					current = _left(current);
 				}
@@ -612,22 +613,22 @@ class	RedBlackTree
 		pair<iterator,iterator>
 						equal_range(key_type const & key)
 		{
-			return make_pair(lower_bound(key), upper_bound(key));
+			return pair<iterator,iterator>(lower_bound(key), upper_bound(key));
 		}
 
 		pair<const_iterator, const_iterator>
 						equal_range(key_type const & key) const
 		{
-			return make_pair(lower_bound(key), upper_bound(key));
+			return pair<const_iterator,const_iterator>(lower_bound(key), upper_bound(key));
 		}
 
 	protected:
-		node *			_get_node()
+		node_type *		_get_node()
 		{
 			return _tree.node_allocator::allocate(1);
 		}
 
-		void			_put_node(node * p)
+		void			_put_node(node_type * p)
 		{
 			_tree.node_allocator::deallocate(p, 1);
 		}
@@ -757,7 +758,7 @@ class	RedBlackTree
 				}
 			}
 
-			_rebalance_after_insert(new_node);							// divided in two functions
+			_rebalance_after_insert(new_node);
 			_tree.node_count++;
 			return iterator(new_node);
 		}
@@ -795,13 +796,12 @@ class	RedBlackTree
 			}
 		}
 
-		void			_rebalance_after_insert(base_pointer node)		// base_pointer parent)
+		void			_rebalance_after_insert(base_pointer node)
 		{
 			base_pointer &	root = _tree.header.parent;
 
 			while (node != root && node->parent->color == red) {
 				base_pointer const		grandpa = node->parent->parent;
-				// base_pointer const		uncle = node->uncle();				// using my own relatives
 				if (node->parent == grandpa->left) {
 					base_pointer const		uncle = grandpa->right;
 					if (uncle && uncle->color == red) {
@@ -811,7 +811,7 @@ class	RedBlackTree
 						node = grandpa;
 					}
 					else {
-						if (node == node->parent->right) {					// ?
+						if (node == node->parent->right) {
 							node = node->parent;
 							_rotate_left(node);
 						}
@@ -829,7 +829,7 @@ class	RedBlackTree
 						node = grandpa;
 					}
 					else {
-						if (node == node->parent->left) {					// ?
+						if (node == node->parent->left) {
 							node = node->parent;
 							_rotate_right(node);
 						}
@@ -1005,7 +1005,7 @@ class	RedBlackTree
 			pivot->parent = node->parent;
 
 			if (node == root) {
-				root = pivot;										//   can i use _root()?
+				root = pivot;
 			}
 			else if (node == node->parent->left) {
 				node->parent->left = pivot;
@@ -1044,13 +1044,13 @@ class	RedBlackTree
 	// Non-member overloads
 	public:
 		friend	bool	operator == (RedBlackTree const & lhs, RedBlackTree const & rhs) {
-			return lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin());
+			return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 		}
 		friend	bool	operator != (RedBlackTree const & lhs, RedBlackTree const & rhs) {
 			return !(lhs == rhs);
 		}
 		friend	bool	operator < (RedBlackTree const & lhs, RedBlackTree const & rhs) {
-			return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+			return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 		}
 		friend	bool	operator <= (RedBlackTree const & lhs, RedBlackTree const & rhs) {
 			return !(rhs < lhs);

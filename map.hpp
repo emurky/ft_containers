@@ -147,7 +147,7 @@ class	map
 		iterator		find(key_type const & key)				{ return _tree.find(key); }
 		const_iterator	find(key_type const & key) const		{ return _tree.find(key); }
 
-		size_type		count(key_type const & key) const		{ return _tree.count(key); }
+		size_type		count(key_type const & key) const		{ return _tree.find(key) == _tree.end() ? 0 : 1; }
 
 		iterator		lower_bound(key_type const & key)		{ return _tree.lower_bound(key); }
 		const_iterator	lower_bound(key_type const & key) const	{ return _tree.lower_bound(key); }
