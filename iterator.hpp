@@ -129,7 +129,7 @@ class	reverse_iterator
 		iterator_type		base() const							{ return _it; }
 
 		reference			operator * () const						{ iterator_type tmp = _it; return *--tmp; }
-		pointer				operator -> () const					{ iterator_type tmp = _it; return --tmp; }
+		pointer				operator -> () const					{ return &(operator*()); }
 		reference			operator [] (difference_type n) const	{ return _it[n]; }
 		reverse_iterator &	operator ++ ()							{ _it--; return *this; }
 		reverse_iterator	operator ++ (int)						{ reverse_iterator tmp(*this); _it--; return tmp; }

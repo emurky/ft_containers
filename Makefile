@@ -10,7 +10,42 @@ RM 					= rm -f
 CXXFLAGS			= -Wall -Wextra -Werror -std=c++98 #-g -fsanitize=address
 CPPFLAGS			= -MMD -I.
 
+FT					= -D SWITCH=0
+STD					= -D SWITCH=1
+
+BOLDMAGENTA			= \033[1m\033[35m
+BOLDRED				= \033[1m\033[31m
+RESET				= \033[0m\n
+
 all:				$(NAME)
+
+ft:
+					@make fclean -s
+					@printf "$(BOLDMAGENTA)Compiling FT_Containers$(RESET)"
+					@make CPPFLAGS="$(CPPFLAGS) $(FT)" all
+					@printf "\n"
+					./$(NAME)
+					@./$(NAME) > ft.txt
+
+std:
+					@make fclean -s
+					@printf "$(BOLDMAGENTA)Compiling STD_Containers$(RESET)"
+					@make CPPFLAGS="$(CPPFLAGS) $(STD)" all
+					@printf "\n"
+					./$(NAME)
+					@./$(NAME) > std.txt
+
+leaks:				ft
+					leaks --atExit -- ./$(NAME)
+
+diff:
+					@printf "$(BOLDRED)Testing difference between FT and STD$(RESET)\n"
+					@make ft
+					@printf "\n"
+					@make std
+					@printf "\n"
+					@printf "$(BOLDRED)========= diff =========$(RESET)"
+					@diff ft.txt std.txt || true
 
 $(OBJS):			Makefile
 
