@@ -476,6 +476,7 @@ class	RedBlackTree
 				if (other._root()) {
 					_root() = other._root();
 					_leftmost() = other._leftmost();
+					_rightmost() = other._rightmost();
 					_root()->parent = _end();
 					other._root() = 0;
 					other._leftmost() = other._end();
@@ -486,6 +487,7 @@ class	RedBlackTree
 				other._root() = _root();
 				other._leftmost() = _leftmost();
 				other._rightmost() = _rightmost();
+				other._root()->parent = other._end();
 				_root() = 0;
 				_leftmost() = _end();
 				_rightmost() = _end();

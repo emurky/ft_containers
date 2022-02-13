@@ -136,7 +136,7 @@ class	map
 
 		void			clear()									{ _tree.clear(); }
 
-		void			swap(map & m)							{ _tree.swap(m); }
+		void			swap(map & m)							{ _tree.swap(m._tree); }
 
 	// Observers
 		allocator_type	get_allocator() const					{ return _tree.get_allocator(); }
