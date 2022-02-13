@@ -57,7 +57,7 @@ class	vector
 		template < class InputIterator >
 		vector	(InputIterator first, InputIterator last,
 				 allocator_type const & alloc = allocator_type(),
-				 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+				 typename enable_if<!is_integral<InputIterator>::value>::type * = 0)
 			: _start(NULL), _end(NULL), _end_cap(NULL), _alloc(alloc)
 		{
 			while (first != last) {
@@ -102,7 +102,8 @@ class	vector
 				_destroy_after_pos(_start + n);
 			}
 			else if (n > capacity()) {
-				reserve(n);
+				reserve(_recommend(n));
+				// reserve(n);
 			}
 			while (_end < _start + n) {
 				_alloc.construct(_end, value);
@@ -133,7 +134,7 @@ class	vector
 	// Modifiers
 		template < class InputIterator >
 		void			assign(InputIterator first, InputIterator last,
-						typename ft::enable_if <!ft::is_integral<InputIterator>::value>::type * = 0)
+						typename enable_if<!is_integral<InputIterator>::value>::type * = 0)
 		{
 			clear();
 			while (first != last) {
@@ -145,7 +146,8 @@ class	vector
 		{
 			clear();
 			if (n > capacity()) {
-				reserve(n);
+				reserve(_recommend(n));
+				// reserve(n);
 			}
 			while (n) {
 				_alloc.construct(_end++, value);
@@ -161,7 +163,8 @@ class	vector
 				reserve(1);
 			}
 			else if (size() + 1 > cap) {
-				reserve(2 * cap);
+				reserve(_recommend(size() + 1));
+				// reserve(2 * cap);
 			}
 			_alloc.construct(_end, value);
 			_end++;
@@ -187,10 +190,11 @@ class	vector
 			size_type	index = static_cast<size_type>(pos - begin());
 
 			if (new_size > capacity()) {
-				if (count == 1) {
-					reserve(2 * capacity()); }
-				else {
-					reserve(new_size); }
+				// if (count == 1) {
+				// 	reserve(2 * capacity()); }
+				// else {
+				// 	reserve(new_size); }
+				reserve(_recommend(new_size));
 			}
 			_move_forward(_start + index, _end, count);
 			for (size_type i = index; i < count + index; i++) {
@@ -201,7 +205,7 @@ class	vector
 
 		template < class InputIterator >
 		void			insert(iterator pos, InputIterator first, InputIterator last,
-						typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+						typename enable_if<!is_integral<InputIterator>::value>::type * = 0)
 		{
 			vector	tmp;
 			while (first != last) {
@@ -213,7 +217,8 @@ class	vector
 			size_type	index = static_cast<size_type>(pos - this->begin());
 
 			if (new_size > capacity()) {
-				reserve(new_size);
+				reserve(_recommend(new_size));
+				// reserve(new_size);
 			}
 			_move_forward(_start + index, _end, count);
 			for (size_type i = 0; i < count; i++) {
@@ -313,7 +318,35 @@ class	vector
 			std::rotate(first - offset, first, last);
 		}
 
+		size_type		_size_after_power2(size_type size)
+		{
+			size_type	new_size = 1;
+
+			if (size > max_size()) {
+				throw std::length_error("vector::allocator()::length_error");
+			}
+			while (new_size < size) {
+				new_size *= 2;
+			}
+			return new_size;
+		}
+
+		size_type		_recommend(size_type new_size) const
+		{
+			size_type const		max_sz = max_size();
+			size_type const		cap = capacity();
+
+			if (new_size > max_sz) {
+				throw std::length_error("vector::reserve()::length_error");
+			}
+			if (cap >= max_sz / 2) {
+				return max_sz;
+			}
+			return std::max<size_type>(2 * cap, new_size);
+		}
+
 	// Non-member overloads
+	public:
 		friend	bool	operator == (vector const & lhs, vector const & rhs) {
 			return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 		}
