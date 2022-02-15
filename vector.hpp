@@ -50,7 +50,7 @@ class	vector
 			_end = _start + count;
 			_end_cap = _end;
 			for (pointer it = _start; it < _end; it++) {
-				_alloc.construct(it, value);
+				_construct_wrapper(it, value);
 			}
 		}
 
@@ -84,8 +84,10 @@ class	vector
 
 		~vector()
 		{
-			clear();
-			_alloc.deallocate(_start, capacity());
+			if (_start) {
+				clear();
+				_alloc.deallocate(_start, capacity());
+			}
 		}
 
 	// Member functions
@@ -103,10 +105,9 @@ class	vector
 			}
 			else if (n > capacity()) {
 				reserve(_recommend(n));
-				// reserve(n);
 			}
 			while (_end < _start + n) {
-				_alloc.construct(_end, value);
+				_construct_wrapper(_end, value);
 				_end++;
 			}
 		}
@@ -122,10 +123,11 @@ class	vector
 				throw std::length_error("vector::reserve()::length_error");
 			new_ptr = _alloc.allocate(n);
 			for (size_type i = 0; i < _size; i++) {
-				_alloc.construct(new_ptr + i, *(_start + i));
+				_construct_wrapper(new_ptr + i, *(_start + i));
 				_alloc.destroy(_start + i);
 			}
-			_alloc.deallocate(_start, capacity());
+			if (_start)
+				_alloc.deallocate(_start, capacity());
 			_start = new_ptr;
 			_end = _start + _size;
 			_end_cap = _start + n;
@@ -147,10 +149,9 @@ class	vector
 			clear();
 			if (n > capacity()) {
 				reserve(_recommend(n));
-				// reserve(n);
 			}
 			while (n) {
-				_alloc.construct(_end++, value);
+				_construct_wrapper(_end++, value);
 				n--;
 			}
 		}
@@ -164,9 +165,8 @@ class	vector
 			}
 			else if (size() + 1 > cap) {
 				reserve(_recommend(size() + 1));
-				// reserve(2 * cap);
 			}
-			_alloc.construct(_end, value);
+			_construct_wrapper(_end, value);
 			_end++;
 		}
 
@@ -190,15 +190,11 @@ class	vector
 			size_type	index = static_cast<size_type>(pos - begin());
 
 			if (new_size > capacity()) {
-				// if (count == 1) {
-				// 	reserve(2 * capacity()); }
-				// else {
-				// 	reserve(new_size); }
 				reserve(_recommend(new_size));
 			}
 			_move_forward(_start + index, _end, count);
 			for (size_type i = index; i < count + index; i++) {
-				_alloc.construct(_start + i, value);
+				_construct_wrapper(_start + i, value);
 			}
 			_end += count;
 		}
@@ -218,11 +214,10 @@ class	vector
 
 			if (new_size > capacity()) {
 				reserve(_recommend(new_size));
-				// reserve(new_size);
 			}
 			_move_forward(_start + index, _end, count);
 			for (size_type i = 0; i < count; i++) {
-				_alloc.construct(_start + index + i, tmp[i]);
+				_construct_wrapper(_start + index + i, tmp[i]);
 			}
 			_end += count;
 		}
@@ -293,13 +288,18 @@ class	vector
 
 	// Private member functions
 	private:
-		void			_deallocate_and_throw(std::exception & e)
+		void			_construct_wrapper(pointer p, const_reference value)
 		{
-			if (_start) {
-				clear();
-				_alloc.deallocate(_start, capacity());
+			try {
+				_alloc.construct(p, value);
 			}
-			throw e;
+			catch (...) {
+				if (_start) {
+					clear();
+					_alloc.deallocate(_start, capacity());
+				}
+				throw;
+			}
 		}
 
 		void			_destroy_after_pos(pointer pos)

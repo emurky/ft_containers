@@ -418,13 +418,15 @@ class	RedBlackTree
 			}
 		}
 
-		// iterator		insert_equal(value_type const & n);
+		/*
+		iterator		insert_equal(value_type const & n);
 
-		// iterator		insert_equal(iterator pos, value_type const & n);
+		iterator		insert_equal(iterator pos, value_type const & n);
 
-		// template < typename InputIterator >
-		// void			insert_equal(InputIterator first, InputIterator last,
-		// 							 typename enable_if<!is_integral<InputIterator>::value>::type * = 0);
+		template < typename InputIterator >
+		void			insert_equal(InputIterator first, InputIterator last,
+									 typename enable_if<!is_integral<InputIterator>::value>::type * = 0);
+		*/
 
 		void			erase(iterator pos)
 		{
@@ -637,7 +639,13 @@ class	RedBlackTree
 		link_type		_create_node(value_type const & n)
 		{
 			link_type	tmp = _get_node();
-			get_allocator().construct(&tmp->value, n);
+			try {
+				get_allocator().construct(&tmp->value, n);
+			}
+			catch (...) {
+				_put_node(tmp);
+				throw;
+			}
 			return tmp;
 		}
 
@@ -769,20 +777,26 @@ class	RedBlackTree
 			link_type	top = _clone_node(n);
 
 			top->parent = p;
-			if (n->right) {
-				top->right = _copy(_right(n), top);
-			}
-			p = top;
-			n = _left(n);
-			while (n) {
-				link_type	m = _clone_node(n);
-				p->left = m;
-				m->parent = p;
+			try {
 				if (n->right) {
-					m->right = _copy(_right(n), m);
+					top->right = _copy(_right(n), top);
 				}
-				p = m;
+				p = top;
 				n = _left(n);
+				while (n) {
+					link_type	m = _clone_node(n);
+					p->left = m;
+					m->parent = p;
+					if (n->right) {
+						m->right = _copy(_right(n), m);
+					}
+					p = m;
+					n = _left(n);
+				}
+			}
+			catch (...) {
+				_erase(top);
+				throw;
 			}
 			return top;
 		}

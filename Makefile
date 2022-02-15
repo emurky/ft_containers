@@ -1,11 +1,11 @@
-SRCS				= mein.cpp
+SRCS				= main.cpp
 
 NAME				= test
 
 OBJS				= $(SRCS:.cpp=.o)
 DEPS				= $(SRCS:.cpp=.d)
 
-CXX					= clang++
+CXX					= c++
 RM 					= rm -f
 CXXFLAGS			= -Wall -Wextra -Werror -std=c++98 #-g -fsanitize=address
 CPPFLAGS			= -MMD -I.
@@ -25,7 +25,7 @@ ft:
 					@printf "$(BOLDMAGENTA)Compiling FT_Containers$(RESET)"
 					@make CPPFLAGS="$(CPPFLAGS) $(FT)" all
 					@printf "\n"
-					./$(NAME) $(SEED)
+					time ./$(NAME) $(SEED)
 					@(time ./$(NAME) $(SEED)) &> ft.txt; echo ft >> ft.txt
 
 std:
@@ -33,11 +33,11 @@ std:
 					@printf "$(BOLDMAGENTA)Compiling STD_Containers$(RESET)"
 					@make CPPFLAGS="$(CPPFLAGS) $(STD)" all
 					@printf "\n"
-					./$(NAME) $(SEED)
+					time ./$(NAME) $(SEED)
 					@(time ./$(NAME) $(SEED)) &> std.txt; echo std >> std.txt
 
 leaks:				ft
-					leaks --atExit -- ./$(NAME)
+					leaks --atExit -- ./$(NAME) $(SEED)
 
 diff:
 					@printf "$(BOLDRED)Testing difference between FT and STD$(RESET)\n"
@@ -47,6 +47,7 @@ diff:
 					@printf "\n"
 					@printf "$(BOLDRED)========= diff =========$(RESET)"
 					@diff ft.txt std.txt || true
+					@make fclean -s
 
 $(OBJS):			Makefile
 
