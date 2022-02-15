@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <fstream>
 #include <deque>
 
@@ -58,21 +57,10 @@ public:
 	iterator end() { return this->c.end(); }
 };
 
-class Test
+void	print_testing(std::string str)
 {
-	private:
-		std::string	*		_str;
-		int	_i;
-
-	public:
-		Test(int i) : _i(i) {
-			std::stringstream	ss;
-			_str = new std::string;
-			ss << _i;
-			ss >> *_str;
-		}
-		~Test() { delete _str; }
-};
+	std::cout << CYAN << str << RESET << std::endl;
+}
 
 int main(int argc, char** argv) {
 	std::cout	<< ITALIC << GREEN
@@ -144,7 +132,7 @@ int main(int argc, char** argv) {
 	{
 		std::cout << *it;
 	}
-	std::cout << std::endl;
+	std::cout << std::endl << std::endl;
 
 	std::cout	<< ITALIC << GREEN
 				<< "Running vector tests."
@@ -153,6 +141,13 @@ int main(int argc, char** argv) {
 	ft::vector<int>						v_int;
 	typedef ft::vector<int>::iterator	iter;
 
+	ft::vector<int>::iterator iter1;
+	ft::vector<int>::const_iterator const_iter1;
+
+	const_iter1 = iter1;
+	// iter1 = const_iter1;
+	print_testing("Iterators assignment done successfully (const_iter = iter)");
+	print_testing("Testing capacity methods:");
 	std::cout << "v_int.empty(): " << (v_int.empty() ? "yes" : "no") << std::endl;
 	std::cout << "v_int.max_size() = " << v_int.max_size() << std::endl;
 	std::cout << "v_int.size() = " << v_int.size() << std::endl;
@@ -166,13 +161,13 @@ int main(int argc, char** argv) {
 	}
 	std::cout << "v_int.size() after push_back() = " << v_int.size() << std::endl;
 	std::cout << "v_int.capacity() = " << v_int.capacity() << std::endl;
-	std::cout << "Testing reverse_iterator:" << std::endl;
+	print_testing("Testing reverse_iterator:");
 	for (ft::vector<int>::reverse_iterator rit = v_int.rbegin(); rit < v_int.rend(); rit++) {
 		std::cout << *rit << ' ';
 	}
 	std::cout << std::endl;
 	try {
-		std::cout << "Testing .at() method:" << std::endl;
+		print_testing("Testing .at() method:");
 		std::cout << v_int.at(12) << std::endl;
 		std::cout << v_int.at(0) << std::endl;
 		std::cout << v_int.at(21) << std::endl;
@@ -181,18 +176,19 @@ int main(int argc, char** argv) {
 	catch (std::exception const & e) {
 		std::cout << "Exception was caught because of a range error from at()" << std::endl;
 	}
-	std::cout << "Testing operator[]:" << std::endl;
+	print_testing("Testing operator[]:");
 	for (int i = 12; i < 22; i++) {
 		std::cout << v_int[i] << ' ';
 	}
 	std::cout << std::endl;
-	std::cout << "Testing reserve():\nv_int.capacity() = " << v_int.capacity() << std::endl;
+	print_testing("Testing reserve():");
+	std::cout << "v_int.capacity() = " << v_int.capacity() << std::endl;
 	v_int.reserve(42);
 	std::cout << "reserve(42): v_int.capacity() = " << v_int.capacity() << std::endl;
 	v_int.reserve(121);
 	std::cout << "reserve(121): v_int.capacity() = " << v_int.capacity() << std::endl;
-	std::cout << "Testing front() and back(): " << v_int.front() << " and " << v_int.back() << std::endl;
-	std::cout << "Testing copy constructor:" << std::endl;
+	std::cout << CYAN << "Testing front() and back(): " << RESET << v_int.front() << " and " << v_int.back() << std::endl;
+	print_testing("Testing copy constructor:");
 	ft::vector<int>	v_copy(v_int);
 	iter	orig_iter = v_int.begin();
 	iter	copy_iter = v_copy.begin();
@@ -202,30 +198,30 @@ int main(int argc, char** argv) {
 			std::cout << "Something's wrong" << std::endl;
 		}
 	}
-	std::cout << "Testing insert():" << std::endl;
+	print_testing("Testing insert():");
 	for (int i = 10; i > 0; i--) {
 		v_int.insert(v_int.begin(), i);
 	}
-	std::cout << "Testing resize(5), should be \"1 2 3 4 5\":" << std::endl;
+	print_testing("Testing resize(5), should be \"1 2 3 4 5\":");
 	v_int.resize(5);
 	for (iter it = v_int.begin(); it < v_int.end(); it++) {
 		std::cout << *it << ' ';
 	}
 	std::cout << std::endl;
-	std::cout << "Testing resize(10), should be \"1 2 3 4 5 42 42 42 42 42\":" << std::endl;
+	print_testing("Testing resize(10), should be \"1 2 3 4 5 42 42 42 42 42\":");
 	v_int.resize(10, 42);
 	for (iter it = v_int.begin(); it < v_int.end(); it++) {
 		std::cout << *it << ' ';
 	}
 	std::cout << std::endl;
-	std::cout << "Testing swap():" << std::endl;
+	print_testing("Testing swap():");
 	v_int.swap(v_copy);
 	for (iter it = v_int.begin(); it < v_int.end(); it++) {
 		std::cout << *it << ' ';
 	}
 	std::cout << std::endl;
 	std::cout << "v_int.size() = " << v_int.size() << std::endl;
-	std::cout << "Testing insert() and erase():" << std::endl;
+	print_testing("Testing insert() and erase():");
 	v_int.insert(v_int.begin() + 12, v_copy.begin(), v_copy.end() - 3);
 	v_int.erase(v_int.begin() + 25, v_int.end() - 12);
 	for (iter it = v_int.begin(); it < v_int.end(); it++) {
@@ -233,17 +229,18 @@ int main(int argc, char** argv) {
 	}
 	std::cout << std::endl;
 	std::cout << "v_int.size() = " << v_int.size() << std::endl;
-	std::cout << "Testing assign():" << std::endl;
+	print_testing("Testing assign():");
 	v_int.assign(v_copy.begin(), v_copy.begin() + 5);
 	for (iter it = v_int.begin(); it < v_int.end(); it++) {
 		std::cout << *it << ' ';
 	}
-	std::cout << "Testing clear():" << std::endl;
+	std::cout << std::endl;
+	print_testing("Testing clear():");
 	std::cout << "v_int.empty(): " << (v_int.empty() ? "yes" : "no") << std::endl;
 	v_int.clear();
 	std::cout << "v_int.empty(): " << (v_int.empty() ? "yes" : "no") << std::endl << std::endl;
 
-	std::cout << "Testing with a large number of elements:" << std::endl;
+	print_testing("Testing with a large number of elements:");
 	std::ifstream	tree("RBtree.hpp");
 	std::string		str;
 	ft::vector<std::string>	v_test;
@@ -257,12 +254,189 @@ int main(int argc, char** argv) {
 	v_salam.assign(210000, "salam aleykum");
 	v_test.insert(v_test.begin() + 212121, v_salam.begin(), v_salam.end());
 	v_test.erase(v_test.begin(), v_test.begin() + 844221);
-	// for (ft::vector<std::string>::iterator it = v_test.begin(); it < v_test.end(); it++) {
-	// 	std::cout << *it << std::endl;
-	// }
+	for (ft::vector<std::string>::iterator it = v_test.begin(); it < v_test.end(); it++) {
+		if (rand() % 1000 == 42) {
+			std::cout << *it << std::endl;
+		}
+	}
 	std::cout << "v_test.size() = " << v_test.size() << std::endl;
 	std::cout << "v_test.capacity() = " << v_test.capacity() << std::endl;
+	std::cout << std::endl;
+	ft::vector<std::string>	v_tmp;
+	v_tmp = v_test;
+	print_testing("Testing operator overloads:");
+	std::cout << "operator == " << (v_test == v_salam ? "true" : "false") << std::endl;
+	std::cout << "operator == " << (v_test == v_tmp ? "true" : "false") << std::endl;
+	std::cout << "operator != " << (v_test != v_salam ? "true" : "false") << std::endl;
+	std::cout << "operator < " << (v_test < v_salam ? "true" : "false") << std::endl;
+	std::cout << "operator <= " << (v_test <= v_salam ? "true" : "false") << std::endl;
+	std::cout << "operator > " << (v_test > v_salam ? "true" : "false") << std::endl;
+	std::cout << "operator >= " << (v_test >= v_salam ? "true" : "false") << std::endl;
+	std::cout << "operator > " << (v_test > v_tmp ? "true" : "false") << std::endl;
+	std::cout << "operator >= " << (v_test >= v_tmp ? "true" : "false") << std::endl;
 
+	std::cout	<< std::endl
+				<< ITALIC << GREEN
+				<< "Running stack tests."
+				<< RESET << std::endl;
+
+	ft::stack<int, std::deque<int> >	st_test;
+	print_testing("Stack was created with std::deque container");
+	print_testing("Testing capacity methods:");
+	std::cout << "st_test.empty(): " << (st_test.empty() ? "yes" : "no") << std::endl;
+	std::cout << "st_test.size() = " << st_test.size() << std::endl;
+	print_testing("Testing push() and size() again:");
+	for (int i = 1; i < 4243; i++) {
+		st_test.push(i);
+	}
+	std::cout << "st_test.size() = " << st_test.size() << std::endl;
+	print_testing("Testing top():");
+	std::cout << "st_test.top() = " << st_test.top() << std::endl;
+	print_testing("Testing pop():");
+	for (int i = 0; i < 4200; i++) {
+		st_test.pop();
+	}
+	std::cout << "st_test.top() = " << st_test.top() << std::endl;
+	std::cout << "st_test.size() = " << st_test.size() << std::endl;
+	std::cout << "st_test.empty(): " << (st_test.empty() ? "yes" : "no") << std::endl;
+
+	std::cout	<< std::endl
+				<< ITALIC << GREEN
+				<< "Running map tests."
+				<< RESET << std::endl;
+
+	ft::map<int, int>	m_test;
+	print_testing("Testing capacity methods:");
+	std::cout << "m_test.empty(): " << (m_test.empty() ? "yes" : "no") << std::endl;
+	std::cout << "m_test.size() = " << m_test.size() << std::endl;
+
+	print_testing("Testing operator[]:");
+	for (int i = 0; i < 21420; i++) {
+		m_test[i] = rand();
+	}
+
+	print_testing("Testing iterator, insert() and erase():");
+	ft::map<int,int>::iterator	map_it = m_test.begin();
+	for (int i = 0; i < 12000; i++) {
+		map_it++;
+	}
+	for (int i = 21420; i < 21420 * 2; i++) {
+		m_test.insert(map_it, ft::make_pair(i, rand()));
+	}
+	for (int i = 420; i < 42000; i++) {
+		m_test.erase(i);
+	}
+	print_testing("And testing reverse_iterator:");
+	for (ft::map<int,int>::reverse_iterator m_iter = m_test.rbegin(); m_iter != m_test.rend(); m_iter++) {
+		std::cout << m_iter->first << ' ' << m_iter->second << ' ';
+	}
+	std::cout << std::endl;
+	std::cout << "m_test.empty(): " << (m_test.empty() ? "yes" : "no") << std::endl;
+	std::cout << "m_test.size() = " << m_test.size() << std::endl;
+	print_testing("Testing find():");
+	for (int i = 0; i < 21; i++) {
+		std::cout << m_test.find(i)->first << ' ' << m_test.find(i)->second << std::endl;
+	}
+	ft::map<int, int>	m_copy;
+	m_copy = m_test;
+
+	ft::map<int,int>::iterator m_it = m_copy.begin();
+	for (int i = 0; i < 21; i++) {
+		m_it++;
+	}
+	m_copy.erase(m_it, m_copy.end());
+	print_testing("Testing swap():");
+	ft::swap(m_copy, m_test);
+	for (ft::map<int,int>::iterator m_iter = m_test.begin(); m_iter != m_test.end(); m_iter++) {
+		std::cout << m_iter->first << ' ' << m_iter->second << ' ';
+	}
+	std::cout << std::endl;
+	std::cout << "m_test.size() = " << m_test.size() << std::endl;
+	print_testing("Testing lower and upper bounds:");
+	std::cout << "m_test.upper_bound(12)->second " << m_test.upper_bound(12)->second << std::endl;
+	std::cout << "m_test.upper_bound(0)->second " << m_test.upper_bound(0)->second << std::endl;
+	std::cout << "m_test.lower_bound(12)->second " << m_test.lower_bound(12)->second << std::endl;
+	std::cout << "m_test.lower_bound(0)->second " << m_test.lower_bound(0)->second << std::endl;
+	print_testing("Testing equal_range():");
+	std::cout << m_test.equal_range(1).first->first << ' ' << m_test.equal_range(1).second->first << ' ' << std::endl;
+	std::cout << m_test.equal_range(1).first->second << ' ' << m_test.equal_range(1).second->second << ' ' << std::endl;
+	print_testing("Testing count():");
+	std::cout << "m_test.count(12) = " << m_test.count(12) << std::endl;
+	std::cout << "m_test.count(424242424242) = " << m_test.count(42424242) << std::endl;
+	print_testing("Testing clear():");
+	m_copy.clear();
+	std::cout << "m_copy.empty() after clear(): " << (m_copy.empty() ? "yes" : "no") << std::endl;
+	print_testing("Testing operator overloads:");
+	std::cout << "operator == " << (m_test == m_copy ? "true" : "false") << std::endl;
+	std::cout << "operator == " << (m_test == m_copy ? "true" : "false") << std::endl;
+	std::cout << "operator != " << (m_test != m_copy ? "true" : "false") << std::endl;
+	std::cout << "operator < " << (m_test < m_copy ? "true" : "false") << std::endl;
+	std::cout << "operator <= " << (m_test <= m_copy ? "true" : "false") << std::endl;
+	std::cout << "operator > " << (m_test > m_copy ? "true" : "false") << std::endl;
+	std::cout << "operator >= " << (m_test >= m_copy ? "true" : "false") << std::endl;
+
+	std::cout	<< std::endl
+				<< ITALIC << GREEN
+				<< "Running set tests."
+				<< RESET << std::endl;
+
+	ft::set<int>	s_test;
+	print_testing("Testing capacity methods:");
+	std::cout << "s_test.empty(): " << (s_test.empty() ? "yes" : "no") << std::endl;
+	std::cout << "s_test.size() = " << s_test.size() << std::endl;
+
+	print_testing("Testing iterator, insert() and erase():");
+	for (int i = 0; i < 43; i++) {
+		s_test.insert(i);
+	}
+	for (int i = 22; i < 42; i++) {
+		s_test.erase(i);
+	}
+	print_testing("And testing reverse_iterator:");
+	for (ft::set<int>::reverse_iterator s_iter = s_test.rbegin(); s_iter != s_test.rend(); s_iter++) {
+		std::cout << *s_iter << ' ' ;
+	}
+	std::cout << std::endl;
+	std::cout << "s_test.empty(): " << (s_test.empty() ? "yes" : "no") << std::endl;
+	std::cout << "s_test.size() = " << s_test.size() << std::endl;
+	print_testing("Testing find():");
+	for (int i = 0; i < 21; i++) {
+		std::cout << *s_test.find(i) << ' ' << std::endl;
+	}
+	ft::set<int>	s_copy;
+	s_copy = s_test;
+
+	ft::set<int>::iterator s_it = s_copy.begin();
+	for (int i = 0; i < 21; i++) {
+		s_it++;
+	}
+	s_copy.erase(s_it, s_copy.end());
+	print_testing("Testing swap():");
+	ft::swap(s_copy, s_test);
+	for (ft::set<int>::iterator s_iter = s_test.begin(); s_iter != s_test.end(); s_iter++) {
+		std::cout << *s_iter << ' ';
+	}
+	std::cout << std::endl;
+	std::cout << "s_test.size() = " << s_test.size() << std::endl;
+	print_testing("Testing lower and upper bounds:");
+	std::cout << "s_test.upper_bound(12)->second " << *s_test.upper_bound(12) << std::endl;
+	std::cout << "s_test.upper_bound(0)->second " << *s_test.upper_bound(0) << std::endl;
+	std::cout << "s_test.lower_bound(12)->second " << *s_test.lower_bound(12) << std::endl;
+	std::cout << "s_test.lower_bound(0)->second " << *s_test.lower_bound(0) << std::endl;
+	print_testing("Testing count():");
+	std::cout << "s_test.count(12) = " << s_test.count(12) << std::endl;
+	std::cout << "s_test.count(424242424242) = " << s_test.count(42424242) << std::endl;
+	print_testing("Testing clear():");
+	s_copy.clear();
+	std::cout << "s_copy.empty() after clear(): " << (s_copy.empty() ? "yes" : "no") << std::endl;
+	print_testing("Testing operator overloads:");
+	std::cout << "operator == " << (s_test == s_copy ? "true" : "false") << std::endl;
+	std::cout << "operator == " << (s_test == s_copy ? "true" : "false") << std::endl;
+	std::cout << "operator != " << (s_test != s_copy ? "true" : "false") << std::endl;
+	std::cout << "operator < " << (s_test < s_copy ? "true" : "false") << std::endl;
+	std::cout << "operator <= " << (s_test <= s_copy ? "true" : "false") << std::endl;
+	std::cout << "operator > " << (s_test > s_copy ? "true" : "false") << std::endl;
+	std::cout << "operator >= " << (s_test >= s_copy ? "true" : "false") << std::endl;
 
 	return (0);
 }
